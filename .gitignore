@@ -1,3 +1,4 @@
 
 /.sfdx
 /.sf
+.sfdx/sfdx-config.json
