@@ -13,3 +13,5 @@ ui-tests/node_modules
 ui-tests/logs
 .DS_Store
 coverage
+sf/
+sfdx/
