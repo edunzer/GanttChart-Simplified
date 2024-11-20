@@ -7,9 +7,10 @@
         <target>lightning__RecordPage</target>
         <target>lightningCommunity__Default</target>
         <target>lightningCommunity__Page</target>
+        <target>lightning__AppPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__RecordPage, lightningCommunity__Default">
+        <targetConfig targets="lightning__RecordPage, lightningCommunity__Default, lightning__AppPage">
             <property name="defaultView" type="String" label="Default View Mode" datasource="View by Day, View by Week" default="View by Week"/>
         </targetConfig>
     </targetConfigs>
