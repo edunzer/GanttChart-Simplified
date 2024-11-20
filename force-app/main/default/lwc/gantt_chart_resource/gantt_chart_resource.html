@@ -41,17 +41,26 @@
                             <!-- Allocation -->
                             <div key={allocation.Id} class={allocation.Id}>
                                 
-                                <div title={allocation.Name} class={allocation.class} style={allocation.style}>
-                                    <div class="slds-truncate lwc-allocation-label" style={allocation.labelStyle}>
-                                        <span if:true={allocation.projectName}>
-                                            {allocation.projectName}
-                                        </span>
-                                        <span if:false={allocation.projectName}>
-                                            Unavailable
-                                        </span>
+                                <div title={allocation.Name} class={allocation.class} style={allocation.style} data-id={allocation.Id}
+                                    data-project={projectIndex} data-allocation={allocationIndex}>
+                                    
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <div class="slds-col slds-grow-none lwc-allocation_actions">
+                                            <lightning-button-icon icon-name="utility:down" variant="bare-inverse" size="small"
+                                                onclick={openAllocationMenu} data-id={allocation.Id}></lightning-button-icon>
+                                        </div>
                                     </div>
+                                    
                                 </div>
                                 
+                                <div class="slds-truncate slds-is-absolute lwc-allocation-label" style={allocation.labelStyle}>
+                                    <span if:true={allocation.projectName}>
+                                        {allocation.projectName}
+                                    </span>
+                                    <span if:false={allocation.projectName}>
+                                        Unavailable
+                                    </span>
+                                </div>
                             </div>
                             <!-- /Allocation -->
                         </template>
