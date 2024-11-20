@@ -15,7 +15,7 @@
 .lwc-allocation {
     background-color: rgba(21, 137, 238);
     border-radius: .25rem;
-    cursor: grab; 
+    cursor: default; 
     opacity: .85;
     padding: .25rem;
     pointer-events: auto;
