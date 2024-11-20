@@ -23,8 +23,7 @@
             <!-- Time Slots-->
             <div class="slds-grid slds-is-absolute lwc-timeslots-container">
                 <template for:each={times} for:item="time" for:index="index">
-                    <div key={time} class={time.class} data-index={index} data-start={time.start} data-end={time.end}
-                        onclick={handleTimeslotClick} ondragenter={handleDragEnter}>
+                    <div key={time} class={time.class} data-index={index} data-start={time.start} data-end={time.end}>
                         <!-- nothing -->
                     </div>
                 </template>
@@ -46,8 +45,7 @@
                                     
                                     <div class="slds-grid slds-grid_vertical-align-center">
                                         <div class="slds-col slds-grow-none lwc-allocation_actions">
-                                            <lightning-button-icon icon-name="utility:down" variant="bare-inverse" size="small"
-                                                onclick={openAllocationMenu} data-id={allocation.Id}></lightning-button-icon>
+                                            <lightning-button-icon icon-name="utility:down" variant="bare-inverse" size="small" data-id={allocation.Id}></lightning-button-icon>
                                         </div>
                                     </div>
                                     
