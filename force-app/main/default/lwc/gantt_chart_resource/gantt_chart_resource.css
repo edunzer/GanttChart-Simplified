@@ -4,13 +4,6 @@
     pointer-events: none;
 }
 
-/****** Allocation Actions Menu ******/
-.lwc-allocations-container ~ .lwc-allocation-actions-container .slds-dropdown {
-    margin-top: 0;
-}
-/****** Allocation Actions Menu ******/
-
-
 /*** Allocations ***/
 .lwc-allocation {
     background-color: rgba(21, 137, 238);
@@ -47,18 +40,7 @@
 .lwc-allocation.high-effort {
     opacity: 0.9;
 }
-
 /****** /Allocation Efforts ******/
-
-.lwc-allocation .lwc-allocation_actions,
-.lwc-allocation .lwc-allocation_handle {
-    opacity: 0;
-}
-
-.lwc-allocation .slds-icon_container {
-    margin-bottom: 1px;
-}
-/*** /Allocations ***/
 
 .lwc-allocation-label {
     color: rgb(255, 255, 255);
