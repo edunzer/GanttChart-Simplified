@@ -76,7 +76,6 @@ export default class GanttChartResource extends LightningElement {
     }
   }
 
-  // modal data
   @track addAllocationData = {};
   @track editAllocationData = {};
 
