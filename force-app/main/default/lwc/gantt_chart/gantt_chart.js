@@ -1,9 +1,7 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-
 import momentJS from "@salesforce/resourceUrl/momentJS";
 import { loadScript } from "lightning/platformResourceLoader";
-
 import getChartData from "@salesforce/apex/ganttChart.getChartData";
 
 export default class GanttChart extends LightningElement {
@@ -242,7 +240,7 @@ export default class GanttChart extends LightningElement {
         self.projectId = data.projectId;
         self.projects = data.projects;
         self.roles = data.roles;
-        
+
         self.resources.forEach(function (resource, i) {
             self.resources[i] = {
                 Id: resource.Id,
