@@ -266,16 +266,6 @@ export default class GanttChart extends LightningElement {
     this.filterModalData.focus = null;
   }
 
-  openFilterModal() {
-    this.filterModalData.projects = Object.assign(
-      [],
-      this._filterData.projects
-    );
-    this.filterModalData.roles = Object.assign([], this._filterData.roles);
-    this.filterModalData.status = this._filterData.status;
-    this.template.querySelector(".filter-modal").show();
-  }
-
   filterProjects(event) {
     this.hideDropdowns();
 
@@ -322,119 +312,6 @@ export default class GanttChart extends LightningElement {
     this.filterModalData.focus = null;
 
     this.setFilterModalDataDisable();
-  }
-
-  // Mohit's addProjectRecordTypeFilter 
-  addProjectRecordTypeFilter(event) {
-    this.filterModalData.projectRecordTypes.push(
-      Object.assign({}, event.currentTarget.dataset)
-    );
-    this.filterModalData.focus = null;
-
-    this.setFilterModalDataDisable();
-  }
-
-  removeProjectFilter(event) {
-    this.filterModalData.projects.splice(event.currentTarget.dataset.index, 1);
-    this.setFilterModalDataDisable();
-  }
-
-  filterRoles(event) {
-    this.hideDropdowns();
-
-    let text = event.target.value;
-
-    // only show roles not selected
-    this.filterModalData.roleOptions = this.roles
-      .filter(role => {
-        return (
-          role.toLowerCase().includes(text.toLowerCase()) &&
-          !this.filterModalData.roles.filter(r => {
-            return r === role;
-          }).length
-        );
-      })
-      .map(role => {
-        return role;
-      });
-    this.filterModalData.focus = "roles";
-  }
-
-  addRoleFilter(event) {
-    this.filterModalData.roles.push(event.currentTarget.dataset.role);
-    this.filterModalData.focus = null;
-    this.setFilterModalDataDisable();
-  }
-
-  removeRoleFilter(event) {
-    this.filterModalData.roles.splice(event.currentTarget.dataset.index, 1);
-    this.setFilterModalDataDisable();
-  }
-
-  setStatusFilter(event) {
-    this.filterModalData.status = event.currentTarget.value;
-    this.setFilterModalDataDisable();
-  }
-
-  clearFilters() {
-    this.filterModalData.projects = [];
-    this.filterModalData.roles = [];
-    this.filterModalData.status = "";
-    this.filterModalData.disabled = true;
-  }
-
-  setFilterModalDataDisable() {
-    this.filterModalData.disabled = true;
-
-    if (
-      this.filterModalData.projects.length > 0 ||
-      this.filterModalData.roles.length > 0 ||
-      this.filterModalData.status !== ""
-    ) {
-      this.filterModalData.disabled = false;
-    }
-  }
-
-  hideDropdowns() {
-    // prevent menu from closing if focused
-    if (this.filterModalData.focus) {
-      return;
-    }
-    this.filterModalData.projectOptions = [];
-    this.filterModalData.roleOptions = [];
-  }
-
-  applyFilters() {
-    this._filterData = {
-      projects: Object.assign([], this.filterModalData.projects),
-      roles: Object.assign([], this.filterModalData.roles),
-      status: this.filterModalData.status
-    };
-
-    this._filterData.projectIds = this._filterData.projects.map(project => {
-      return project.id;
-    });
-    
-    let filters = [];
-    if (this.filterModalData.projects.length) {
-      filters.push("Projects");
-    }
-    if (this.filterModalData.roles.length) {
-      filters.push("Roles");
-    }
-    if (this.filterModalData.status) {
-      filters.push("Status");
-    }
-    if (this.filterModalData.status) {
-      filters.push("Status");
-    }
-
-    if (filters.length) {
-      this._filterData.message = "Filtered By " + filters.join(", ");
-    }
-
-    this.handleRefresh();
-    this.template.querySelector(".filter-modal").hide();
   }
 
   handleRefresh() {
