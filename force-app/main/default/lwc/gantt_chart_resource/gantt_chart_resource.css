@@ -93,7 +93,7 @@
     border-bottom: 1px solid #dddbda;
     border-right: 1px solid #dddbda;
     border-top: 1px solid #dddbda;
-    cursor: pointer;
+    cursor: default;
     min-width: 50px;
     transition: background-color 200ms ease 0s;
 }
