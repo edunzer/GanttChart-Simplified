@@ -2,7 +2,7 @@ public with sharing class ganttChart {
     @AuraEnabled
     public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects, String filterStatus) {
         Map<String, Object> data = new Map<String, Object>();
-        String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Active__c, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Active__c, Project__r.Color__c, Start_Date__c, End_Date__c, Status__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate AND (Project__c = NULL OR Project__r.Active__c = TRUE) AND Resource__r.Active__c = TRUE';
+        String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Active__c, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Active__c, Project__r.Color__c, Start_Date__c, End_Date__c, Status__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
         
         List<Allocation__c> allocations = new List<Allocation__c>();
         Map<String, Object> projectById = new Map<String, Object>();
@@ -25,7 +25,6 @@ public with sharing class ganttChart {
                 System.debug(slotSize);
                 allocations = Database.query(query);
 
-                // display all active resources
                 for (Object r : ganttChart.getResources()) {
                     Map<String, Object> resource = (Map<String, Object>)r;
                     resourceById.put((String)resource.get('Id'), new Map<String, Object> {
@@ -117,7 +116,6 @@ public with sharing class ganttChart {
 
         for (Resource__c r : [SELECT Id, Name, Default_Role__c
                               FROM Resource__c
-                              WHERE Active__c = true
                               ORDER BY Name]) {
             resources.add(new Map<String, Object> {
                 'Id' => r.Id,
@@ -133,7 +131,6 @@ public with sharing class ganttChart {
     public static List<Project__c> getProjects() {
         return [SELECT Id, Name
                 FROM Project__c
-                WHERE Active__c = true
                 ORDER BY Name];
     }
 
