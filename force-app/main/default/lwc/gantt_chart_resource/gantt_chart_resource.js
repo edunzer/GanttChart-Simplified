@@ -160,21 +160,19 @@ export default class GanttChartResource extends LightningElement {
     self.projects = [];
 
     Object.keys(self._resource.allocationsByProject).forEach(projectId => {
-      let project = {
-        id: projectId,
-        allocations: []
-      };
+        let project = {
+            id: projectId,
+            allocations: self.resource.allocationsByProject[projectId].map(allocation => {
+                return {
+                    ...allocation,
+                    class: self.calcClass(allocation),
+                    style: self.calcStyle(allocation),
+                    labelStyle: self.calcLabelStyle(allocation),
+                };
+            })
+        };
 
-      self.resource.allocationsByProject[projectId].forEach(allocation => {
-        allocation = Object.assign({}, allocation);
-        allocation.class = self.calcClass(allocation);
-        allocation.style = self.calcStyle(allocation);
-        allocation.labelStyle = self.calcLabelStyle(allocation);
-
-        project.allocations.push(allocation);
-      });
-
-      self.projects.push(project);
+        self.projects.push(project);
     });
   }
 }

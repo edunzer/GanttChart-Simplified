@@ -222,40 +222,22 @@ export default class GanttChart extends LightningElement {
         startTime: self.startDateUTC,
         endTime: self.endDateUTC,
         slotSize: self.view.slotSize,
-        filterProjects: self._filterData.projectIds,
-    }).then(data => {
-        self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
-        self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-        self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-        self.projectId = data.projectId;
-        self.projects = data.projects;
+        filterProjects: self._filterData.projectIds, // Filtering happens here in Apex
+    })
+        .then(data => {
+            self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
+            self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
+            self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
 
-        self.resources.forEach(function (resource, i) {
-            self.resources[i] = {
-                Id: resource.Id,
-                Name: resource.Name,
-                Default_Role__c: resource.Default_Role__c,
-                allocationsByProject: {}
-            };
+            self.resources = data.resources;
+            self.projects = data.projects;
+            self.projectId = data.projectId;
+        })
+        .catch(error => {
+            this.dispatchEvent(new ShowToastEvent({
+                message: error.body.message,
+                variant: 'error'
+            }));
         });
-
-        data.resources.forEach(function (newResource) {
-            for (let i = 0; i < self.resources.length; i++) {
-                if (self.resources[i].Id === newResource.Id) {
-                    self.resources[i] = newResource;
-                    return;
-                }
-            }
-
-            self.resources.push(newResource);
-        });
-
-        debugger;
-    }).catch(error => {
-        this.dispatchEvent(new ShowToastEvent({
-            message: error.body.message,
-            variant: 'error'
-        }));
-    });
   }
 }
