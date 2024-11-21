@@ -4,6 +4,11 @@
     pointer-events: none;
 }
 
+.project-container {
+    padding-top: 0.3rem; /* Add vertical spacing between project containers */
+    padding-bottom: 0.3rem;
+}
+
 /*** Allocations ***/
 .lwc-allocation {
     background-color: rgba(21, 137, 238); /* Default blue color */
