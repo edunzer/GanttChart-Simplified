@@ -171,14 +171,7 @@ export default class GanttChartResource extends LightningElement {
       };
       styles.push("background-color: " + colorMap[backgroundColor]);
     }
-
-    if (!isNaN(this.dragInfo.startIndex)) {
-      styles.push("pointer-events: none");
-      styles.push("transition: left ease 250ms, right ease 250ms");
-    } else {
-      styles.push("pointer-events: auto");
-      styles.push("transition: none");
-    }
+    styles.push("transition: none");
 
     return styles.join("; ");
   }
@@ -200,12 +193,7 @@ export default class GanttChartResource extends LightningElement {
       "left: calc(" + left * 100 + "% + 15px)",
       "right: calc(" + right * 100 + "% + 30px)"
     ];
-
-    if (!isNaN(this.dragInfo.startIndex)) {
-      styles.push("transition: left ease 250ms, right ease 250ms");
-    } else {
-      styles.push("transition: none");
-    }
+    styles.push("transition: none");
 
     return styles.join("; ");
   }
@@ -232,24 +220,4 @@ export default class GanttChartResource extends LightningElement {
       self.projects.push(project);
     });
   }
-
-  /*** Drag/Drop ***/
-  dragInfo = {};
-  handleDragStart(event) {
-    let container = this.template.querySelector(
-      "." + event.currentTarget.dataset.id + " .lwc-allocation"
-    );
-    this.dragInfo.projectIndex = container.dataset.project;
-    this.dragInfo.allocationIndex = container.dataset.allocation;
-    this.dragInfo.newAllocation = this.projects[
-      container.dataset.project
-    ].allocations[container.dataset.allocation];
-
-    // hide drag image
-    container.style.opacity = 0;
-    setTimeout(function() {
-      container.style.pointerEvents = "none";
-    }, 0);
-  }
-  /*** /Drag/Drop ***/
 }

@@ -55,10 +55,6 @@
     opacity: 0;
 }
 
-.lwc-allocation .lwc-allocation_handle {
-    cursor: ew-resize;
-}
-
 .lwc-allocation .slds-icon_container {
     margin-bottom: 1px;
 }
