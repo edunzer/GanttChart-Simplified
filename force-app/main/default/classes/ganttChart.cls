@@ -1,14 +1,12 @@
 public with sharing class ganttChart {
     @AuraEnabled
-    public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects, List<String> filterRoles, String filterStatus) {
+    public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects, String filterStatus) {
         Map<String, Object> data = new Map<String, Object>();
         String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Active__c, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Active__c, Project__r.Color__c, Start_Date__c, End_Date__c, Status__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate AND (Project__c = NULL OR Project__r.Active__c = TRUE) AND Resource__r.Active__c = TRUE';
         
         List<Allocation__c> allocations = new List<Allocation__c>();
         Map<String, Object> projectById = new Map<String, Object>();
         Map<String, Object> resourceById = new Map<String, Object>();
-        Set<String> roles = new Set<String>();
-
 
         if (String.isNotEmpty(startTime) &&  String.isNotEmpty(endTime)) {
             Date startDate = DateTime.newInstance(Long.valueOf(startTime)).date();
@@ -104,14 +102,11 @@ public with sharing class ganttChart {
                     'left' => left,
                     'right' => right
                 });
-
-                roles.add(allocation.Resource__r.Default_Role__c);
             }
         }
 
         data.put('projects', projectById.values());
         data.put('resources', resourceById.values());
-        data.put('roles', roles);
         
         return data;
     }
