@@ -5,8 +5,6 @@ import momentJS from "@salesforce/resourceUrl/momentJS";
 import { loadScript } from "lightning/platformResourceLoader";
 
 import getChartData from "@salesforce/apex/ganttChart.getChartData";
-import getProjects from "@salesforce/apex/ganttChart.getProjects";
-import getResources from "@salesforce/apex/ganttChart.getResources";
 
 export default class GanttChart extends LightningElement {
   @api recordId = "";
@@ -258,61 +256,6 @@ export default class GanttChart extends LightningElement {
   /*** /Navigation ***/
 
   /*** Filter Modal ***/
-  stopProp(event) {
-    event.stopPropagation();
-  }
-
-  clearFocus() {
-    this.filterModalData.focus = null;
-  }
-
-  filterProjects(event) {
-    this.hideDropdowns();
-
-    let text = event.target.value;
-
-    getProjects().then(projects => {
-      // only show projects not selected
-      this.filterModalData.projectOptions = projects.filter(project => {
-        return (
-          project.Name &&
-          project.Name.toLowerCase().includes(text.toLowerCase()) &&
-          !this.filterModalData.projects.filter(p => {
-            return p.id === project.Id;
-          }).length
-        );
-      });
-      this.filterModalData.focus = "projects";
-    });
-  }
-  // Mohit's filter by record type
-  filterProjectRecords(event) {
-    this.hideDropdowns();
-  
-    let text = event.target.value;
-  
-    getProjects().then(projects => {
-      // only show projects not selected
-      this.filterModalData.projerojectRecordTypeOptions = projects.filter(project => {
-        return (
-          project.RecordTypeId &&
-          !this.filterModalData.projects.filter(p => {
-            return p.id === project.RecordTypeId;
-          }).length
-        );
-      });
-      this.filterModalData.focus = "rojectRecordTypeOptions";
-    });
-  }
-  
-  addProjectFilter(event) {
-    this.filterModalData.projects.push(
-      Object.assign({}, event.currentTarget.dataset)
-    );
-    this.filterModalData.focus = null;
-
-    this.setFilterModalDataDisable();
-  }
 
   handleRefresh() {
     // refreshApex(this.wiredData);
