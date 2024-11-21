@@ -239,7 +239,6 @@ export default class GanttChart extends LightningElement {
         self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
         self.projectId = data.projectId;
         self.projects = data.projects;
-        self.roles = data.roles;
 
         self.resources.forEach(function (resource, i) {
             self.resources[i] = {
