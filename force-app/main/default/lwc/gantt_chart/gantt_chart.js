@@ -58,7 +58,6 @@ export default class GanttChart extends LightningElement {
 
   constructor() {
     super();
-    this.template.addEventListener("click", this.closeDropdowns.bind(this));
   }
 
   connectedCallback() {
@@ -74,15 +73,6 @@ export default class GanttChart extends LightningElement {
       }
       this.setStartDate(new Date());
       this.handleRefresh();
-    });
-  }
-
-  // catch blur on allocation menus
-  closeDropdowns() {
-    Array.from(
-      this.template.querySelectorAll(".lwc-resource-component")
-    ).forEach(row => {
-      row.closeAllocationMenu();
     });
   }
 

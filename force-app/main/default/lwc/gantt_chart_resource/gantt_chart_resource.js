@@ -1,8 +1,7 @@
 import { LightningElement, api, track } from "lwc";
 
 export default class GanttChartResource extends LightningElement {
-  @api isResourceView; // resource page has different layout
-  @api projectId; // used on project page for quick adding of allocations
+  @api isResourceView; // Resource page layout flag
   @api
   get resource() {
     return this._resource;
@@ -12,7 +11,7 @@ export default class GanttChartResource extends LightningElement {
     this.setProjects();
   }
 
-  // dates
+  // Dates
   @api startDate;
   @api endDate;
   @api dateIncrement;
@@ -62,51 +61,13 @@ export default class GanttChartResource extends LightningElement {
     }
   }
 
-  // used by parent level window
-  @api
-  closeAllocationMenu() {
-    if (this.menuData.open) {
-      this.menuData.show = true;
-      this.menuData.open = false;
-    } else {
-      this.menuData = {
-        show: false,
-        open: false
-      };
-    }
-  }
-
-  @track addAllocationData = {};
-  @track editAllocationData = {};
-
-  @track menuData = {
-    open: false,
-    show: false,
-    style: ""
-  };
-
   @track projects = [];
-
-  effortOptions = [
-    {
-      label: "Low",
-      value: "Low"
-    },
-    {
-      label: "Medium",
-      value: "Medium"
-    },
-    {
-      label: "High",
-      value: "High"
-    }
-  ];
 
   connectedCallback() {
     this.refreshDates(this.startDate, this.endDate, this.dateIncrement);
   }
 
-  // calculate allocation classes
+  // Calculate allocation classes
   calcClass(allocation) {
     let classes = ["slds-is-absolute", "lwc-allocation"];
 
@@ -140,7 +101,7 @@ export default class GanttChartResource extends LightningElement {
     return classes.join(" ");
   }
 
-  // calculate allocation positions/styles
+  // Calculate allocation positions/styles
   calcStyle(allocation) {
     if (!this.times) {
       return;
@@ -149,9 +110,7 @@ export default class GanttChartResource extends LightningElement {
     const totalSlots = this.times.length;
     let styles = [
       "left: " + (allocation.left / totalSlots) * 100 + "%",
-      "right: " +
-        ((totalSlots - (allocation.right + 1)) / totalSlots) * 100 +
-        "%"
+      "right: " + ((totalSlots - (allocation.right + 1)) / totalSlots) * 100 + "%"
     ];
 
     if ("Unavailable" !== allocation.Status__c) {
@@ -171,12 +130,11 @@ export default class GanttChartResource extends LightningElement {
       };
       styles.push("background-color: " + colorMap[backgroundColor]);
     }
-    styles.push("transition: none");
 
     return styles.join("; ");
   }
 
-  // calculate allocation label position
+  // Calculate allocation label position
   calcLabelStyle(allocation) {
     if (!this.times) {
       return;
@@ -193,7 +151,6 @@ export default class GanttChartResource extends LightningElement {
       "left: calc(" + left * 100 + "% + 15px)",
       "right: calc(" + right * 100 + "% + 30px)"
     ];
-    styles.push("transition: none");
 
     return styles.join("; ");
   }
