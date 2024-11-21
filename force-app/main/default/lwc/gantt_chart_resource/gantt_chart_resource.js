@@ -19,47 +19,54 @@ export default class GanttChartResource extends LightningElement {
   @api
   refreshDates(startDate, endDate, dateIncrement) {
     if (startDate && endDate && dateIncrement) {
-      let times = [];
-      let today = new Date();
-      today.setHours(0, 0, 0, 0);
-      today = today.getTime();
+        let times = [];
+        let today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize today to the start of the day
+        today = today.getTime();
 
-      for (
-        let date = new Date(startDate);
-        date <= endDate;
-        date.setDate(date.getDate() + dateIncrement)
-      ) {
-        let time = {
-          class: "slds-col lwc-timeslot",
-          start: date.getTime()
-        };
+        for (
+            let date = new Date(startDate);
+            date <= endDate;
+            date.setDate(date.getDate() + dateIncrement)
+        ) {
+            let time = {
+                class: "slds-col lwc-timeslot",
+                start: date.getTime(),
+                end: null // Initialize the end property
+            };
 
-        if (dateIncrement > 1) {
-          let end = new Date(date);
-          end.setDate(end.getDate() + dateIncrement - 1);
-          time.end = end.getTime();
-        } else {
-          time.end = date.getTime();
+            if (dateIncrement > 1) {
+                let end = new Date(date);
+                end.setDate(end.getDate() + dateIncrement - 1);
+                time.end = end.getTime();
+            } else {
+                time.end = date.getTime();
+            }
 
-          if (times.length % 7 === 6) {
-            time.class += " lwc-is-week-end";
-          }
+            // Check if today falls within the time slot
+            if (today >= time.start && today <= time.end) {
+                time.class += " lwc-is-today";
+            }
+
+            // Highlight weekends if applicable
+            if (dateIncrement === 1 && date.getDay() === 0) {
+                time.class += " lwc-is-week-end";
+            }
+
+            times.push(time);
         }
 
-        if (today >= time.start && today <= time.end) {
-          time.class += " lwc-is-today";
-        }
+        // Assign the calculated times to the component
+        this.times = times;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.dateIncrement = dateIncrement;
 
-        times.push(time);
-      }
-
-      this.times = times;
-      this.startDate = startDate;
-      this.endDate = endDate;
-      this.dateIncrement = dateIncrement;
-      this.setProjects();
+        // Update related projects after setting times
+        this.setProjects();
     }
   }
+
 
   @track projects = [];
 
