@@ -49,34 +49,10 @@ export default class GanttChart extends LightningElement {
     disabled: true,
     message: "",
     projects: [],
-    projectRecordTypes: [], // Record Type Id for each option
-    roles: [],
-    status: "",
-    projectOptions: [],
-    projectRecordTypeOptions: [], // To filter based on the record types 
-    roleOptions: [],
-    statusOptions: [
-      {
-        // TODO: pull from backend? unsure how to handle "All"
-        label: "All",
-        value: ""
-      },
-      {
-        label: "Hold",
-        value: "Hold"
-      },
-      {
-        label: "Unavailable",
-        value: "Unavailable"
-      }
-    ]
   };
   _filterData = {
     projects: [],
     projectIds: [],
-    projectRecordType: [], // to track record type Ids 
-    roles: [],
-    status: ""
   };
   @track resourceModalData = {};
   /*** /Modals ***/
@@ -267,9 +243,6 @@ export default class GanttChart extends LightningElement {
         endTime: self.endDateUTC,
         slotSize: self.view.slotSize,
         filterProjects: self._filterData.projectIds,
-        filterProjectRecords: self._filterData.projectRecordTypes, // filter for record types
-        filterRoles: self._filterData.roles,
-        filterStatus: self._filterData.status
     }).then(data => {
         self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
         self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
