@@ -15,15 +15,11 @@
 .lwc-allocation {
     background-color: rgba(21, 137, 238);
     border-radius: .25rem;
-    cursor: grab; 
+    cursor: default; 
     opacity: .85;
     padding: .25rem;
     pointer-events: auto;
     top: 0px;
-}
-
-.lwc-allocation:hover {
-    opacity: .95;
 }
 
 /****** Allocation Status ******/
@@ -44,25 +40,14 @@
     opacity: 0.5;
 }
 
-.lwc-allocation.low-effort:hover {
-    opacity: 0.65;
-}
-
 .lwc-allocation.medium-effort {
     opacity: 0.75;
-}
-
-.lwc-allocation.medium-effort:hover {
-    opacity: 0.85;
 }
 
 .lwc-allocation.high-effort {
     opacity: 0.9;
 }
 
-.lwc-allocation.high-effort:hover {
-    opacity: 0.95;
-}
 /****** /Allocation Efforts ******/
 
 .lwc-allocation .lwc-allocation_actions,
@@ -72,16 +57,6 @@
 
 .lwc-allocation .lwc-allocation_handle {
     cursor: ew-resize;
-}
-
-.lwc-allocation:hover .lwc-allocation_handle,
-.lwc-allocation:hover .lwc-allocation_actions {
-    opacity: .7;
-}
-
-.lwc-allocation .lwc-allocation_handle:hover,
-.lwc-allocation .lwc-allocation_actions:hover {
-    opacity: 1;
 }
 
 .lwc-allocation .slds-icon_container {
@@ -118,7 +93,7 @@
     border-bottom: 1px solid #dddbda;
     border-right: 1px solid #dddbda;
     border-top: 1px solid #dddbda;
-    cursor: pointer;
+    cursor: default;
     min-width: 50px;
     transition: background-color 200ms ease 0s;
 }
@@ -132,15 +107,7 @@
     border-right: 3px solid #dddbda;
 }
 
-.lwc-timeslot:hover {
-    background-color: rgb(232, 232, 232);
-}
-
 .lwc-timeslot.lwc-is-today {
     background: rgba(21, 137, 238, 0.1);
-}
-
-.lwc-timeslot.lwc-is-today:hover {
-    background: rgba(21, 137, 238, 0.2);
 }
 /*** Day View Timeslots ***/
