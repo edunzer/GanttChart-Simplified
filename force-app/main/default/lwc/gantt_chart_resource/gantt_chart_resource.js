@@ -249,8 +249,6 @@ export default class GanttChartResource extends LightningElement {
     });
   }
 
-  
-
   /*** Drag/Drop ***/
   dragInfo = {};
   handleDragStart(event) {
@@ -268,104 +266,6 @@ export default class GanttChartResource extends LightningElement {
     setTimeout(function() {
       container.style.pointerEvents = "none";
     }, 0);
-  }
-
-  handleLeftDragStart(event) {
-    this.dragInfo.direction = "left";
-    this.handleDragStart(event);
-  }
-
-  handleRightDragStart(event) {
-    this.dragInfo.direction = "right";
-    this.handleDragStart(event);
-  }
-
-  handleDragEnd(event) {
-    event.preventDefault();
-
-    const projectIndex = this.dragInfo.projectIndex;
-    const allocationIndex = this.dragInfo.allocationIndex;
-    const allocation = this.dragInfo.newAllocation;
-
-    this.projects = JSON.parse(JSON.stringify(this.projects));
-    this.projects[projectIndex].allocations[allocationIndex] = allocation;
-
-    let startDate = new Date(allocation.Start_Date__c + "T00:00:00");
-    let endDate = new Date(allocation.End_Date__c + "T00:00:00");
-
-    this._saveAllocation({
-      allocationId: allocation.Id,
-      startDate:
-        startDate.getTime() + startDate.getTimezoneOffset() * 60 * 1000 + "",
-      endDate: endDate.getTime() + endDate.getTimezoneOffset() * 60 * 1000 + ""
-    });
-
-    this.dragInfo = {};
-    this.template.querySelector(
-      "." + allocation.Id + " .lwc-allocation"
-    ).style.pointerEvents = "auto";
-  }
-
-  handleDragEnter(event) {
-    const projectIndex = this.dragInfo.projectIndex;
-    const allocationIndex = this.dragInfo.allocationIndex;
-    const direction = this.dragInfo.direction;
-    const start = new Date(parseInt(event.currentTarget.dataset.start, 10));
-    const end = new Date(parseInt(event.currentTarget.dataset.end, 10));
-    const index = parseInt(event.currentTarget.dataset.index, 10);
-
-    if (isNaN(this.dragInfo.startIndex)) {
-      this.dragInfo.startIndex = index;
-    }
-
-    let allocation = JSON.parse(
-      JSON.stringify(this.projects[projectIndex].allocations[allocationIndex])
-    );
-
-    switch (direction) {
-      case "left":
-        if (index <= allocation.right) {
-          allocation.Start_Date__c = start.toJSON().substr(0, 10);
-          allocation.left = index;
-        } else {
-          allocation = this.dragInfo.newAllocation;
-        }
-        break;
-      case "right":
-        if (index >= allocation.left) {
-          allocation.End_Date__c = end.toJSON().substr(0, 10);
-          allocation.right = index;
-        } else {
-          allocation = this.dragInfo.newAllocation;
-        }
-        break;
-      default:
-        let deltaIndex = index - this.dragInfo.startIndex;
-        let firstSlot = this.times[0];
-        let startDate = new Date(firstSlot.start);
-        let endDate = new Date(firstSlot.end);
-
-        allocation.left = allocation.left + deltaIndex;
-        allocation.right = allocation.right + deltaIndex;
-
-        startDate.setDate(
-          startDate.getDate() + allocation.left * this.dateIncrement
-        );
-        endDate.setDate(
-          endDate.getDate() + allocation.right * this.dateIncrement
-        );
-
-        allocation.Start_Date__c = startDate.toJSON().substr(0, 10);
-        allocation.End_Date__c = endDate.toJSON().substr(0, 10);
-    }
-
-    this.dragInfo.newAllocation = allocation;
-    this.template.querySelector(
-      "." + allocation.Id + " .lwc-allocation"
-    ).style = this.calcStyle(allocation);
-    this.template.querySelector(
-      "." + allocation.Id + " .lwc-allocation-label"
-    ).style = this.calcLabelStyle(allocation);
   }
   /*** /Drag/Drop ***/
 }
