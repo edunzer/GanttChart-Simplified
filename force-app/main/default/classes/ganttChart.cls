@@ -9,20 +9,6 @@ public with sharing class ganttChart {
         Map<String, Object> resourceById = new Map<String, Object>();
         Set<String> roles = new Set<String>();
 
-        if (!filterProjects.isEmpty()) {
-            query += ' AND Project__c IN :filterProjects';
-        }
-        /*
-        if (!filterProjectRecords.isEmpty()) {
-            query += ' AND Project__c IN :filterProjectRecords';
-        }
-        */
-        if (!filterRoles.isEmpty()) {
-            query += ' AND Resource__r.Default_Role__c IN :filterRoles';
-        }
-        if (String.isNotEmpty(filterStatus)) {
-            query += ' AND Status__c = :filterStatus';
-        }
 
         if (String.isNotEmpty(startTime) &&  String.isNotEmpty(endTime)) {
             Date startDate = DateTime.newInstance(Long.valueOf(startTime)).date();
@@ -156,41 +142,4 @@ public with sharing class ganttChart {
                 ORDER BY Name];
     }
 
-    @AuraEnabled
-    public static void saveAllocation(Id allocationId, Id projectId, Id resourceId, String effort, String status, String startDate, String endDate) {
-        Allocation__c allocation = new Allocation__c(
-            Start_Date__c = DateTime.newInstance(Long.valueOf(startDate)).date(),
-            End_Date__c = DateTime.newInstance(Long.valueOf(endDate)).date()
-        );
-
-        // update allocation
-        if (null != allocationId) {
-            allocation.Id = allocationId;
-        } else {
-            if (null != projectId) {
-                allocation.Project__c = projectId;
-            }
-
-            allocation.Resource__c = resourceId;
-        }
-
-        if (String.isNotEmpty(effort)) {
-            allocation.Effort__c = effort;
-        }
-        if (String.isNotEmpty(status)) {
-            allocation.Status__c = status;
-
-            // remove project
-            if ('Unavailable' == status) {
-                allocation.Project__c = null;
-            }
-        }
-        
-        upsert allocation;
-    }
-
-    @AuraEnabled
-    public static void deleteAllocation(Id allocationId) {
-        delete new Allocation__c(Id = allocationId);
-    }
 }
