@@ -1,5 +1,4 @@
 import { LightningElement, api, track, wire } from "lwc";
-import { refreshApex } from "@salesforce/apex";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 import momentJS from "@salesforce/resourceUrl/momentJS";
@@ -491,20 +490,11 @@ export default class GanttChart extends LightningElement {
     this._filterData.projectIds = this._filterData.projects.map(project => {
       return project.id;
     });
-    /*
-    this._filterData.projectRecordType = this._filterData.projects.map(project => {
-      return project.recordTypeId;
-    });
-*/
+    
     let filters = [];
     if (this.filterModalData.projects.length) {
       filters.push("Projects");
     }
-    /*
-    if (this.filterModalData.projectRecordType.length) {
-      filters.push("projectRecordTypes");
-    }
-    */
     if (this.filterModalData.roles.length) {
       filters.push("Roles");
     }
@@ -522,62 +512,6 @@ export default class GanttChart extends LightningElement {
     this.handleRefresh();
     this.template.querySelector(".filter-modal").hide();
   }
-  /*** /Filter Modal ***/
-
-  // @wire(getChartData, {
-  //   recordId: "$recordId",
-  //   startTime: "$startDateUTC",
-  //   endTime: "$endDateUTC",
-  //   slotSize: "$view.slotSize",
-  //   filterProjects: "$_filterData.projectIds",
-  //   filterRoles: "$_filterData.roles",
-  //   filterStatus: "$_filterData.status"
-  // })
-  // wiredChartData(value) {
-  //   const {error, data} = value;
-  //   this.wiredData = value;
-    
-  //   if (data) {
-  //     this.isResourceView =
-  //       typeof this.objectApiName !== "undefined" &&
-  //       this.objectApiName.endsWith("Resource__c");
-  //     this.isProjectView =
-  //       typeof this.objectApiName !== "undefined" &&
-  //       this.objectApiName.endsWith("Project__c");
-  //     this.projectId = data.projectId;
-  //     this.projects = data.projects;
-  //     this.roles = data.roles;
-
-  //     // empty old data
-  //     // we want to keep resources we've already seen
-  //     this.resources.forEach((resource, i) => {
-  //       this.resources[i] = {
-  //         Id: resource.Id,
-  //         Name: resource.Name,
-  //         Default_Role__c: resource.Default_Role__c,
-  //         allocationsByProject: {}
-  //       };
-  //     });
-
-  //     data.resources.forEach(newResource => {
-  //       for (let i = 0; i < this.resources.length; i++) {
-  //         if (this.resources[i].Id === newResource.Id) {
-  //           this.resources[i] = newResource;
-  //           return;
-  //         }
-  //       }
-
-  //       this.resources.push(newResource);
-  //     });
-  //   } else if (error) {
-  //     this.dispatchEvent(
-  //       new ShowToastEvent({
-  //         message: error.message,
-  //         variant: "error"
-  //       })
-  //     );
-  //   }
-  // }
 
   handleRefresh() {
     // refreshApex(this.wiredData);
