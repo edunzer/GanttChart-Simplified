@@ -43,8 +43,6 @@ export default class GanttChart extends LightningElement {
     slots: 1
   };
 
-  /*** Modals ***/
-  // TODO: move filter search to new component?
   @track filterModalData = {
     disabled: true,
     message: "",
@@ -55,9 +53,6 @@ export default class GanttChart extends LightningElement {
     projectIds: [],
   };
   @track resourceModalData = {};
-  /*** /Modals ***/
-
-  // gantt_chart_resource
   @track startDate;
   @track endDate;
   @track projectId;
@@ -231,10 +226,7 @@ export default class GanttChart extends LightningElement {
   }
   /*** /Navigation ***/
 
-  /*** Filter Modal ***/
-
   handleRefresh() {
-    // refreshApex(this.wiredData);
     let self = this;
 
     getChartData({
@@ -250,9 +242,7 @@ export default class GanttChart extends LightningElement {
         self.projectId = data.projectId;
         self.projects = data.projects;
         self.roles = data.roles;
-
-        // empty old data
-        // we want to keep resources we've already seen
+        
         self.resources.forEach(function (resource, i) {
             self.resources[i] = {
                 Id: resource.Id,
