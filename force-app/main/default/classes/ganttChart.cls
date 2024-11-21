@@ -2,7 +2,7 @@ public with sharing class ganttChart {
     @AuraEnabled
     public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects, String filterStatus) {
         Map<String, Object> data = new Map<String, Object>();
-        String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Active__c, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Active__c, Project__r.Color__c, Start_Date__c, End_Date__c, Status__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
+        String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Color__c, Start_Date__c, End_Date__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
         
         List<Allocation__c> allocations = new List<Allocation__c>();
         Map<String, Object> projectById = new Map<String, Object>();
@@ -94,7 +94,6 @@ public with sharing class ganttChart {
                     'Id' => allocation.Id,
                     'Start_Date__c' => allocation.Start_Date__c,
                     'End_Date__c' => allocation.End_Date__c,
-                    'Status__c' => allocation.Status__c,
                     'Effort__c' => allocation.Effort__c,
                     'projectName' => allocation.Project__r.Name,
                     'color' => allocation.Project__r.Color__c,
