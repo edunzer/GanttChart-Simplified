@@ -101,16 +101,6 @@ export default class GanttChartResource extends LightningElement {
       value: "High"
     }
   ];
-  statusOptions = [
-    {
-      label: "Active",
-      value: "Active"
-    },
-    {
-      label: "Hold",
-      value: "Hold"
-    }
-  ];
 
   connectedCallback() {
     this.refreshDates(this.startDate, this.endDate, this.dateIncrement);
