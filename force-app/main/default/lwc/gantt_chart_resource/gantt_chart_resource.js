@@ -76,7 +76,6 @@ export default class GanttChartResource extends LightningElement {
     }
   }
 
-  // modal data
   @track addAllocationData = {};
   @track editAllocationData = {};
 
@@ -100,16 +99,6 @@ export default class GanttChartResource extends LightningElement {
     {
       label: "High",
       value: "High"
-    }
-  ];
-  statusOptions = [
-    {
-      label: "Active",
-      value: "Active"
-    },
-    {
-      label: "Hold",
-      value: "Hold"
     }
   ];
 

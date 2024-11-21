@@ -1,12 +1,8 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-
 import momentJS from "@salesforce/resourceUrl/momentJS";
 import { loadScript } from "lightning/platformResourceLoader";
-
 import getChartData from "@salesforce/apex/ganttChart.getChartData";
-import getProjects from "@salesforce/apex/ganttChart.getProjects";
-import getResources from "@salesforce/apex/ganttChart.getResources";
 
 export default class GanttChart extends LightningElement {
   @api recordId = "";
@@ -45,45 +41,16 @@ export default class GanttChart extends LightningElement {
     slots: 1
   };
 
-  /*** Modals ***/
-  // TODO: move filter search to new component?
   @track filterModalData = {
     disabled: true,
     message: "",
     projects: [],
-    projectRecordTypes: [], // Record Type Id for each option
-    roles: [],
-    status: "",
-    projectOptions: [],
-    projectRecordTypeOptions: [], // To filter based on the record types 
-    roleOptions: [],
-    statusOptions: [
-      {
-        // TODO: pull from backend? unsure how to handle "All"
-        label: "All",
-        value: ""
-      },
-      {
-        label: "Hold",
-        value: "Hold"
-      },
-      {
-        label: "Unavailable",
-        value: "Unavailable"
-      }
-    ]
   };
   _filterData = {
     projects: [],
     projectIds: [],
-    projectRecordType: [], // to track record type Ids 
-    roles: [],
-    status: ""
   };
   @track resourceModalData = {};
-  /*** /Modals ***/
-
-  // gantt_chart_resource
   @track startDate;
   @track endDate;
   @track projectId;
@@ -257,188 +224,7 @@ export default class GanttChart extends LightningElement {
   }
   /*** /Navigation ***/
 
-  /*** Filter Modal ***/
-  stopProp(event) {
-    event.stopPropagation();
-  }
-
-  clearFocus() {
-    this.filterModalData.focus = null;
-  }
-
-  openFilterModal() {
-    this.filterModalData.projects = Object.assign(
-      [],
-      this._filterData.projects
-    );
-    this.filterModalData.roles = Object.assign([], this._filterData.roles);
-    this.filterModalData.status = this._filterData.status;
-    this.template.querySelector(".filter-modal").show();
-  }
-
-  filterProjects(event) {
-    this.hideDropdowns();
-
-    let text = event.target.value;
-
-    getProjects().then(projects => {
-      // only show projects not selected
-      this.filterModalData.projectOptions = projects.filter(project => {
-        return (
-          project.Name &&
-          project.Name.toLowerCase().includes(text.toLowerCase()) &&
-          !this.filterModalData.projects.filter(p => {
-            return p.id === project.Id;
-          }).length
-        );
-      });
-      this.filterModalData.focus = "projects";
-    });
-  }
-  // Mohit's filter by record type
-  filterProjectRecords(event) {
-    this.hideDropdowns();
-  
-    let text = event.target.value;
-  
-    getProjects().then(projects => {
-      // only show projects not selected
-      this.filterModalData.projerojectRecordTypeOptions = projects.filter(project => {
-        return (
-          project.RecordTypeId &&
-          !this.filterModalData.projects.filter(p => {
-            return p.id === project.RecordTypeId;
-          }).length
-        );
-      });
-      this.filterModalData.focus = "rojectRecordTypeOptions";
-    });
-  }
-  
-  addProjectFilter(event) {
-    this.filterModalData.projects.push(
-      Object.assign({}, event.currentTarget.dataset)
-    );
-    this.filterModalData.focus = null;
-
-    this.setFilterModalDataDisable();
-  }
-
-  // Mohit's addProjectRecordTypeFilter 
-  addProjectRecordTypeFilter(event) {
-    this.filterModalData.projectRecordTypes.push(
-      Object.assign({}, event.currentTarget.dataset)
-    );
-    this.filterModalData.focus = null;
-
-    this.setFilterModalDataDisable();
-  }
-
-  removeProjectFilter(event) {
-    this.filterModalData.projects.splice(event.currentTarget.dataset.index, 1);
-    this.setFilterModalDataDisable();
-  }
-
-  filterRoles(event) {
-    this.hideDropdowns();
-
-    let text = event.target.value;
-
-    // only show roles not selected
-    this.filterModalData.roleOptions = this.roles
-      .filter(role => {
-        return (
-          role.toLowerCase().includes(text.toLowerCase()) &&
-          !this.filterModalData.roles.filter(r => {
-            return r === role;
-          }).length
-        );
-      })
-      .map(role => {
-        return role;
-      });
-    this.filterModalData.focus = "roles";
-  }
-
-  addRoleFilter(event) {
-    this.filterModalData.roles.push(event.currentTarget.dataset.role);
-    this.filterModalData.focus = null;
-    this.setFilterModalDataDisable();
-  }
-
-  removeRoleFilter(event) {
-    this.filterModalData.roles.splice(event.currentTarget.dataset.index, 1);
-    this.setFilterModalDataDisable();
-  }
-
-  setStatusFilter(event) {
-    this.filterModalData.status = event.currentTarget.value;
-    this.setFilterModalDataDisable();
-  }
-
-  clearFilters() {
-    this.filterModalData.projects = [];
-    this.filterModalData.roles = [];
-    this.filterModalData.status = "";
-    this.filterModalData.disabled = true;
-  }
-
-  setFilterModalDataDisable() {
-    this.filterModalData.disabled = true;
-
-    if (
-      this.filterModalData.projects.length > 0 ||
-      this.filterModalData.roles.length > 0 ||
-      this.filterModalData.status !== ""
-    ) {
-      this.filterModalData.disabled = false;
-    }
-  }
-
-  hideDropdowns() {
-    // prevent menu from closing if focused
-    if (this.filterModalData.focus) {
-      return;
-    }
-    this.filterModalData.projectOptions = [];
-    this.filterModalData.roleOptions = [];
-  }
-
-  applyFilters() {
-    this._filterData = {
-      projects: Object.assign([], this.filterModalData.projects),
-      roles: Object.assign([], this.filterModalData.roles),
-      status: this.filterModalData.status
-    };
-
-    this._filterData.projectIds = this._filterData.projects.map(project => {
-      return project.id;
-    });
-    
-    let filters = [];
-    if (this.filterModalData.projects.length) {
-      filters.push("Projects");
-    }
-    if (this.filterModalData.roles.length) {
-      filters.push("Roles");
-    }
-    if (this.filterModalData.status) {
-      filters.push("Status");
-    }
-    if (this.filterModalData.status) {
-      filters.push("Status");
-    }
-
-    if (filters.length) {
-      this._filterData.message = "Filtered By " + filters.join(", ");
-    }
-
-    this.handleRefresh();
-    this.template.querySelector(".filter-modal").hide();
-  }
-
   handleRefresh() {
-    // refreshApex(this.wiredData);
     let self = this;
 
     getChartData({
@@ -447,19 +233,13 @@ export default class GanttChart extends LightningElement {
         endTime: self.endDateUTC,
         slotSize: self.view.slotSize,
         filterProjects: self._filterData.projectIds,
-        filterProjectRecords: self._filterData.projectRecordTypes, // filter for record types
-        filterRoles: self._filterData.roles,
-        filterStatus: self._filterData.status
     }).then(data => {
         self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
         self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
         self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
         self.projectId = data.projectId;
         self.projects = data.projects;
-        self.roles = data.roles;
 
-        // empty old data
-        // we want to keep resources we've already seen
         self.resources.forEach(function (resource, i) {
             self.resources[i] = {
                 Id: resource.Id,
