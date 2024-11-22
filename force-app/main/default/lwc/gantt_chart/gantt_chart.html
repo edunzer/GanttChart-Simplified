@@ -18,10 +18,14 @@
           <!-- /View Select -->
 
           <!-- Title (Date Range, Centered) -->
-          <div class="slds-col slds-text-align_center">
-            <h1 class="slds-text-heading_medium slds-truncate">
-              {formattedStartDate} - {formattedEndDate}
-            </h1>
+          <div class="slds-col slds-text-align_center slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+            <div class="slds-box slds-p-horizontal_small slds-m-right_small" style="border: 1px solid #747474; border-radius: 0.25rem; padding: 0 8px; line-height: 2rem;">
+              {formattedStartDate}
+            </div>
+            <span class="slds-text-heading_medium slds-m-horizontal_small">-</span>
+            <div class="slds-box slds-p-horizontal_small slds-m-left_small" style="border: 1px solid #747474; border-radius: 0.25rem; padding: 0 8px; line-height: 2rem;">
+              {formattedEndDate}
+            </div>
           </div>
           <!-- /Title (Date Range) -->
 
