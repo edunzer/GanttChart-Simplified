@@ -29,11 +29,11 @@ export default class GanttChart extends LightningElement {
     // View Select
     options: [
       {
-        label: "View by Day",
+        label: "By Day",
         value: "1/14"
       },
       {
-        label: "View by Week",
+        label: "By Week",
         value: "7/10"
       }
     ],
@@ -65,7 +65,7 @@ export default class GanttChart extends LightningElement {
       loadScript(this, momentJS)
     ]).then(() => {
       switch (this.defaultView) {
-        case "View by Day":
+        case "By Day":
           this.setView("1/14");
           break;
         default:
