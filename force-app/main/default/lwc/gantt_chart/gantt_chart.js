@@ -10,7 +10,6 @@ export default class GanttChart extends LightningElement {
 
   @track isResourceView;
   @track isProjectView;
-  @track isRecordTypeView; 
 
   // design attributes
   @api defaultView;
@@ -226,7 +225,6 @@ export default class GanttChart extends LightningElement {
         .then(data => {
             self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
             self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-            self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
 
             self.resources = data.resources;
             self.projects = data.projects;
