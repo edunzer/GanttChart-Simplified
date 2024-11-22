@@ -117,7 +117,6 @@ export default class GanttChart extends LightningElement {
       "";
     this.formattedEndDate = this.endDate.toLocaleDateString();
 
-    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     let today = new Date();
     today.setHours(0, 0, 0, 0);
     today = today.getTime();
