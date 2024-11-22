@@ -14,23 +14,28 @@
           <!-- /Title (Date Range) -->
 
           <!-- Date Navigation -->
-          <div class="slds-col slds-grow-none">
+          <div class="slds-col slds-grow-none slds-grid slds-grid_align-spread">
+            <!-- Quick Change -->
             <div class="slds-show_inline-block">
-              <lightning-button-icon
+              <lightning-button-group>
+                <lightning-button-icon
                 icon-name="utility:left"
                 variant="border-filled"
                 onclick={navigateToPrevious}>
-            </lightning-button-icon>
+              </lightning-button-icon>
               <lightning-button
                 label="Today"
                 onclick={navigateToToday} >
-            </lightning-button>
+              </lightning-button>
               <lightning-button-icon
                 icon-name="utility:right"
                 variant="border-filled"
                 onclick={navigateToNext}>
-            </lightning-button-icon>
+              </lightning-button-icon>
+              </lightning-button-group>
             </div>
+            <!-- /Quick Change -->
+            <!-- Date Select -->
             <div class="slds-show_inline-block">
               <lightning-input
                 label="Date"
@@ -40,8 +45,9 @@
                 class="lwc-datepicker slds-m-left_small"
                 value={datePickerString}
                 onchange={navigateToDay}>
-            </lightning-input>
+              </lightning-input>
             </div>
+            <!-- /Date Select -->
             <!-- View Select -->
             <div class="slds-show_inline-block">
               <lightning-combobox
