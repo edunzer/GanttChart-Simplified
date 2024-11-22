@@ -29,11 +29,11 @@ export default class GanttChart extends LightningElement {
     // View Select
     options: [
       {
-        label: "View by Day",
+        label: "By Day",
         value: "1/14"
       },
       {
-        label: "View by Week",
+        label: "By Week",
         value: "7/10"
       }
     ],
@@ -58,7 +58,6 @@ export default class GanttChart extends LightningElement {
 
   constructor() {
     super();
-    this.template.addEventListener("click", this.closeDropdowns.bind(this));
   }
 
   connectedCallback() {
@@ -66,7 +65,7 @@ export default class GanttChart extends LightningElement {
       loadScript(this, momentJS)
     ]).then(() => {
       switch (this.defaultView) {
-        case "View by Day":
+        case "By Day":
           this.setView("1/14");
           break;
         default:
@@ -74,15 +73,6 @@ export default class GanttChart extends LightningElement {
       }
       this.setStartDate(new Date());
       this.handleRefresh();
-    });
-  }
-
-  // catch blur on allocation menus
-  closeDropdowns() {
-    Array.from(
-      this.template.querySelectorAll(".lwc-resource-component")
-    ).forEach(row => {
-      row.closeAllocationMenu();
     });
   }
 
@@ -232,40 +222,22 @@ export default class GanttChart extends LightningElement {
         startTime: self.startDateUTC,
         endTime: self.endDateUTC,
         slotSize: self.view.slotSize,
-        filterProjects: self._filterData.projectIds,
-    }).then(data => {
-        self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
-        self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-        self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-        self.projectId = data.projectId;
-        self.projects = data.projects;
+        filterProjects: self._filterData.projectIds, // Filtering happens here in Apex
+    })
+        .then(data => {
+            self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
+            self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
+            self.isRecordTypeView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
 
-        self.resources.forEach(function (resource, i) {
-            self.resources[i] = {
-                Id: resource.Id,
-                Name: resource.Name,
-                Default_Role__c: resource.Default_Role__c,
-                allocationsByProject: {}
-            };
+            self.resources = data.resources;
+            self.projects = data.projects;
+            self.projectId = data.projectId;
+        })
+        .catch(error => {
+            this.dispatchEvent(new ShowToastEvent({
+                message: error.body.message,
+                variant: 'error'
+            }));
         });
-
-        data.resources.forEach(function (newResource) {
-            for (let i = 0; i < self.resources.length; i++) {
-                if (self.resources[i].Id === newResource.Id) {
-                    self.resources[i] = newResource;
-                    return;
-                }
-            }
-
-            self.resources.push(newResource);
-        });
-
-        debugger;
-    }).catch(error => {
-        this.dispatchEvent(new ShowToastEvent({
-            message: error.body.message,
-            variant: 'error'
-        }));
-    });
   }
 }

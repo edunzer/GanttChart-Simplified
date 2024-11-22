@@ -1,66 +1,38 @@
 public with sharing class ganttChart {
     @AuraEnabled
-    public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects, String filterStatus) {
+    public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects) {
         Map<String, Object> data = new Map<String, Object>();
-        String query = 'SELECT Resource__c, Resource__r.Name, Resource__r.Default_Role__c, Project__c, Project__r.Name, Project__r.Color__c, Start_Date__c, End_Date__c, Effort__c FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
-        
-        List<Allocation__c> allocations = new List<Allocation__c>();
-        Map<String, Object> projectById = new Map<String, Object>();
-        Map<String, Object> resourceById = new Map<String, Object>();
-
-        if (String.isNotEmpty(startTime) &&  String.isNotEmpty(endTime)) {
+        try {
+            
+            // Parse date ranges
             Date startDate = DateTime.newInstance(Long.valueOf(startTime)).date();
-            
             Date endDate = DateTime.newInstance(Long.valueOf(endTime)).date();
-            Integer days = startDate.daysBetween(endDate) + 1;
-            slotSize = Integer.valueOf(slotSize);
-            Decimal slots = days / slotSize;
-            
-            // Overview View
-            if (String.isEmpty(recordId)) {
-                query += ' ORDER BY Resource__r.Name, Project__r.Name NULLS FIRST, Start_Date__c';
-                System.debug(query);
-                System.debug(startTime);
-                System.debug(endTime);
-                System.debug(slotSize);
-                allocations = Database.query(query);
 
-                for (Object r : ganttChart.getResources()) {
-                    Map<String, Object> resource = (Map<String, Object>)r;
-                    resourceById.put((String)resource.get('Id'), new Map<String, Object> {
-                        'Id' => resource.get('Id'),
-                        'Name' => resource.get('Name'),
-                        'Default_Role__c' => resource.get('Default_Role__c'),
-                        'allocationsByProject' => new Map<String, Object>()
-                    });
-                }
-            } else {
-                if (Id.valueOf(recordId).getSobjectType().getDescribe().getName().endsWith('Project__c')) {
-                    data.put('projectId', recordId);
-                }
+            // Base query with parameters
+            String baseQuery = 'SELECT Resource__c, Resource__r.Name, Resource__r.Default_Role__c, ' +
+                'Project__c, Project__r.Name, Project__r.Color__c, Start_Date__c, End_Date__c, Effort__c ' +
+                'FROM Allocation__c ' +
+                'WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
 
-                query += ' AND (Project__c = :recordId OR Resource__c = :recordId)';
-                query += ' ORDER BY Resource__r.Name, Project__r.Name NULLS FIRST, Start_Date__c';
-
-                allocations = Database.query(query);
-
-                // empty state on resource page
-                if (allocations.isEmpty() && Id.valueOf(recordId).getSobjectType().getDescribe().getName().endsWith('Resource__c')) {
-                    Resource__c resource = [SELECT Id, Name, Active__c, Default_Role__c
-                                            FROM Resource__c
-                                            WHERE Id = :recordId];
-
-                    resourceById.put(resource.Id, new Map<String, Object> {
-                        'Id' => resource.Id,
-                        'Name' => resource.Name,
-                        'Default_Role__c' => resource.Default_Role__c,
-                        'allocationsByProject' => new Map<String, Object>()
-                    });
-                }
+            // Add filters
+            if (!String.isEmpty(recordId)) {
+                baseQuery += ' AND (Project__c = :recordId OR Resource__c = :recordId)';
+            }
+            if (!filterProjects.isEmpty()) {
+                baseQuery += ' AND Project__c IN :filterProjects';
             }
 
-            // organize allocations by resource and project
+            baseQuery += ' ORDER BY Resource__r.Name, Project__r.Name, Start_Date__c';
+
+            // Execute query
+            List<Allocation__c> allocations = Database.query(baseQuery);
+
+            // Map data for LWC
+            Map<String, Object> projectById = new Map<String, Object>();
+            Map<String, Object> resourceById = new Map<String, Object>();
+
             for (Allocation__c allocation : allocations) {
+                // Ensure resources are included
                 if (!resourceById.containsKey(allocation.Resource__c)) {
                     resourceById.put(allocation.Resource__c, new Map<String, Object> {
                         'Id' => allocation.Resource__c,
@@ -69,10 +41,14 @@ public with sharing class ganttChart {
                         'allocationsByProject' => new Map<String, Object>()
                     });
                 }
-
                 Map<String, Object> resource = (Map<String, Object>)resourceById.get(allocation.Resource__c);
+
+                // Organize by project
+                if (!resource.containsKey('allocationsByProject')) {
+                    resource.put('allocationsByProject', new Map<String, Object>());
+                }
+
                 Map<String, Object> allocationsByProject = (Map<String, Object>)resource.get('allocationsByProject');
-                
                 if (!allocationsByProject.containsKey(allocation.Project__c)) {
                     allocationsByProject.put(allocation.Project__c, new List<Object>());
                 }
@@ -82,30 +58,30 @@ public with sharing class ganttChart {
                     'Name' => allocation.Project__r.Name
                 });
 
-                List<Object> projectAllocation = (List<Object>)allocationsByProject.get(allocation.Project__c);
+                List<Object> projectAllocations = (List<Object>)allocationsByProject.get(allocation.Project__c);
 
                 Decimal left = Decimal.valueOf(startDate.daysBetween(allocation.Start_Date__c)) / slotSize;
-                left = left.round(System.RoundingMode.FLOOR);
-                
                 Decimal right = Decimal.valueOf(startDate.daysBetween(allocation.End_Date__c)) / slotSize;
-                right = right.round(System.RoundingMode.FLOOR);
 
-                projectAllocation.add(new Map<String, Object> {
+                projectAllocations.add(new Map<String, Object> {
                     'Id' => allocation.Id,
                     'Start_Date__c' => allocation.Start_Date__c,
                     'End_Date__c' => allocation.End_Date__c,
                     'Effort__c' => allocation.Effort__c,
                     'projectName' => allocation.Project__r.Name,
                     'color' => allocation.Project__r.Color__c,
-                    'left' => left,
-                    'right' => right
+                    'left' => left.round(System.RoundingMode.FLOOR),
+                    'right' => right.round(System.RoundingMode.FLOOR)
                 });
             }
+
+            data.put('projects', projectById.values());
+            data.put('resources', resourceById.values());
+
+        } catch (Exception e) {
+            throw new AuraHandledException('Error fetching Gantt Chart data: ' + e.getMessage());
         }
 
-        data.put('projects', projectById.values());
-        data.put('resources', resourceById.values());
-        
         return data;
     }
 
@@ -128,9 +104,7 @@ public with sharing class ganttChart {
 
     @AuraEnabled
     public static List<Project__c> getProjects() {
-        return [SELECT Id, Name
-                FROM Project__c
-                ORDER BY Name];
+        List<Project__c> projects = [SELECT Id, Name FROM Project__c ORDER BY Name];
+        return projects;
     }
-
 }
