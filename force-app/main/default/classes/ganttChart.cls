@@ -10,7 +10,7 @@ public with sharing class ganttChart {
 
             // Base query with parameters
             String baseQuery = 'SELECT Resource__c, Resource__r.Name, Resource__r.Default_Role__c, ' +
-                'Project__c, Project__r.Name, Project__r.Color__c, Start_Date__c, End_Date__c, Effort__c ' +
+                'Project__c, Project__r.Name, Start_Date__c, End_Date__c ' +
                 'FROM Allocation__c ' +
                 'WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
 
@@ -67,9 +67,7 @@ public with sharing class ganttChart {
                     'Id' => allocation.Id,
                     'Start_Date__c' => allocation.Start_Date__c,
                     'End_Date__c' => allocation.End_Date__c,
-                    'Effort__c' => allocation.Effort__c,
                     'projectName' => allocation.Project__r.Name,
-                    'color' => allocation.Project__r.Color__c,
                     'left' => left.round(System.RoundingMode.FLOOR),
                     'right' => right.round(System.RoundingMode.FLOOR)
                 });
