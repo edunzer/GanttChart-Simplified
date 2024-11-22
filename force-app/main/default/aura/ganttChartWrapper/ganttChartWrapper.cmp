@@ -1,3 +1,0 @@
-<aura:component implements="force:appHostable">
-    <c:gantt_chart/>
-</aura:component>
