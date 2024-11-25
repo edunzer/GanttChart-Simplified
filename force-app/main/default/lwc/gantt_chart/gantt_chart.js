@@ -247,29 +247,39 @@ export default class GanttChart extends LightningElement {
   /*** /Navigation ***/
 
   handleRefresh() {
-    let self = this;
-
+    // Map recordId to appropriate filter based on objectApiName
+    if (this.objectApiName === "Resource__c") {
+      this.selectedResourceId = this.recordId; // Treat recordId as Resource ID
+      this.selectedProjectId = null; // Clear Project ID
+    } else if (this.objectApiName === "Project__c") {
+      this.selectedProjectId = this.recordId; // Treat recordId as Project ID
+      this.selectedResourceId = null; // Clear Resource ID
+    }
+  
+    // Call Apex method with the filters
     getChartData({
-        recordId: self.recordId ? self.recordId : '',
-        startTime: self.startDateUTC,
-        endTime: self.endDateUTC,
-        slotSize: self.view.slotSize,
-        filterProjects: self._filterData.projectIds, // Filtering happens here in Apex
+      resourceId: this.selectedResourceId ? this.selectedResourceId : null,
+      projectId: this.selectedProjectId ? this.selectedProjectId : null,
+      startTime: this.startDateUTC,
+      endTime: this.endDateUTC,
+      slotSize: this.view.slotSize
     })
-        .then(data => {
-            self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
-            self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-
-            self.resources = data.resources;
-            self.projects = data.projects;
-            self.projectId = data.projectId;
-        })
-        .catch(error => {
-            this.dispatchEvent(new ShowToastEvent({
-                message: error.body.message,
-                variant: 'error'
-            }));
-        });
+      .then(data => {
+        this.isResourceView = this.objectApiName === "Resource__c";
+        this.isProjectView = this.objectApiName === "Project__c";
+  
+        this.resources = data.resources;
+        this.projects = data.projects;
+      })
+      .catch(error => {
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Error fetching chart data",
+            message: error.body.message,
+            variant: "error"
+          })
+        );
+      });
   }
    
 }
