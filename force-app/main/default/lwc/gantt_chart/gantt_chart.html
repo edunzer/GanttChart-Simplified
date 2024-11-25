@@ -145,6 +145,23 @@
         <div if:true={isFilterPanelOpen} class="lwc-filter-panel">
           <div class="slds-p-around_medium slds-border_left">
             <h3 class="slds-text-heading_small slds-m-bottom_medium slds-m-top_medium">Filters</h3>
+
+            <!-- Resource Filter -->
+            <lightning-record-picker
+              label="Resource"
+              placeholder="Search Resources..."
+              object-api-name="Resource__c"
+              onchange={handleResourceChange}>
+            </lightning-record-picker>
+
+            <!-- Project Filter -->
+            <lightning-record-picker
+              label="Project"
+              placeholder="Search Projects..."
+              object-api-name="Project__c"
+              onchange={handleProjectChange}>
+            </lightning-record-picker>
+
             <lightning-button-group>
               <lightning-button
                 label="Apply Filters"
