@@ -12,7 +12,8 @@ public with sharing class ganttChart {
             String baseQuery = 'SELECT Resource__c, Resource__r.Name, Resource__r.Default_Role__c, ' +
                 'Project__c, Project__r.Name, Start_Date__c, End_Date__c ' +
                 'FROM Allocation__c ' +
-                'WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
+                'WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate' +
+                'LIMIT 500';
 
             // Add filters
             if (!String.isEmpty(recordId)) {
