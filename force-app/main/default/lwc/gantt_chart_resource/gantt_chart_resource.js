@@ -125,5 +125,22 @@ export default class GanttChartResource extends NavigationMixin(LightningElement
     }
   }
 
+  handleResourceClick(event) {
+    // Retrieve the data-id from the clicked element
+    const resourceId = event.currentTarget.dataset.id;
+    console.log('Resource Clicked:', resourceId); // Debugging log
+    if (resourceId) {
+        // Navigate to the resource record page
+        this[NavigationMixin.Navigate]({
+            type: "standard__recordPage",
+            attributes: {
+                recordId: resourceId,
+                objectApiName: "Resource__c", // Replace with the correct API name
+                actionName: "view",
+            },
+        });
+    }
+  }
+
 
 }
