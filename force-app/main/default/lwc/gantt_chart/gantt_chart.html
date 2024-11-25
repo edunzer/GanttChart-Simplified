@@ -5,7 +5,6 @@
       <div class="slds-p-around_medium slds-border_bottom">
         <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
           <!-- View Select, Date Range, Navigation -->
-          
           <!-- View Select (Far Left) -->
           <div class="slds-col slds-grow-none">
             <lightning-combobox
@@ -17,7 +16,6 @@
             </lightning-combobox>
           </div>
           <!-- /View Select -->
-
           <!-- Title (Date Range, Centered) -->
           <div class="slds-col slds-text-align_center slds-grid slds-grid_align-center slds-grid_vertical-align-center">
             <div class="slds-box slds-p-horizontal_small slds-m-right_small" style="border: 1px solid #747474; border-radius: 0.25rem; padding: 0 8px; line-height: 2rem;">
@@ -29,7 +27,6 @@
             </div>
           </div>
           <!-- /Title (Date Range) -->
-
           <!-- Date Navigation (Far Right) -->
           <div class="slds-col slds-grow-none slds-grid slds-grid_align-end">
             <div class="slds-show_inline-block slds-m-right_small">
@@ -70,82 +67,76 @@
             </div>
           </div>
           <!-- /Date Navigation -->
-
         </div>
       </div>
       <!-- /Header Bar -->
-
       <div class="slds-grid">
         <!-- Main Content (Gantt Chart) -->
         <div class="slds-col lwc-main-content">
           <div class="slds-scrollable_x">
             <div class="slds-p-around_medium lwc-chart_container">
               <!-- Timeline, Allocation Table -->
-              
               <!-- Timeline -->
-          <div class="slds-grid lwc-timeline">
-            <div
-              if:false={isResourceView}
-              class="slds-col slds-size_1-of-6 slds-align-bottom">
-              <div class="slds-text-heading_medium slds-p-around_small">
-                Resources
-              </div>
-            </div>
-            <div class="slds-col">
-              <div class="slds-grid">
-                <template for:each={dates} for:item="date">
-                  <div key={date} class="slds-col lwc-timeline_month-container" style={date.style}>
-                    <div class="slds-grid">
-                      <div class="slds-col slds-has-flexi-truncate">
-                        <div
-                          class="lwc-timeline_month slds-p-around_xx-small slds-theme_shade slds-text-align_center slds-text-color_weak slds-text-body_small slds-m-horizontal_x-small slds-truncate">
-                          {date.name}
+              <div class="slds-grid lwc-timeline">
+                <div
+                  if:false={isResourceView}
+                  class="slds-col slds-size_1-of-6 slds-align-bottom">
+                  <div class="slds-text-heading_medium slds-p-around_small">
+                    Resources
+                  </div>
+                </div>
+                <div class="slds-col">
+                  <div class="slds-grid">
+                    <template for:each={dates} for:item="date">
+                      <div key={date} class="slds-col lwc-timeline_month-container" style={date.style}>
+                        <div class="slds-grid">
+                          <div class="slds-col slds-has-flexi-truncate">
+                            <div
+                              class="lwc-timeline_month slds-p-around_xx-small slds-theme_shade slds-text-align_center slds-text-color_weak slds-text-body_small slds-m-horizontal_x-small slds-truncate">
+                              {date.name}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="slds-grid">
+                          <template for:each={date.days} for:item="day">
+                            <div key={day} class={day.class}>
+                              <div if:true={day.dayName}>{day.dayName}</div>
+                              <div>{day.label}</div>
+                            </div>
+                          </template>
                         </div>
                       </div>
-                    </div>
-                    <div class="slds-grid">
-                      <template for:each={date.days} for:item="day">
-                        <div key={day} class={day.class}>
-                          <div if:true={day.dayName}>{day.dayName}</div>
-                          <div>{day.label}</div>
-                        </div>
-                      </template>
-                    </div>
+                    </template>
                   </div>
-                </template>
+                </div>
               </div>
-            </div>
-          </div>
-          <!-- /Timeline -->
-
-          <!-- Allocation Table -->
-          <!-- Resource Rows -->
-          <template if:true={resources.length}>
-            <template for:each={resources} for:item="resource">
-              <c-gantt_chart_resource
-                key={resource.Id}
-                class="lwc-resource-component"
-                is-resource-view={isResourceView}
-                resource={resource}
-                project-id={projectId}
-                date-increment={view.slotSize}
-                start-date={startDate}
-                end-date={endDate}
-                onrefresh={handleRefresh}>
-              </c-gantt_chart_resource>
-            </template>
-          </template>
-          <!-- /Resource Rows -->
-
-          <!-- Empty State -->
-          <div
-            if:false={resources.length}
-            class="slds-text-align_center slds-p-around_medium">
-            <span class="slds-text-color_weak">No Resources to Show</span>
-          </div>
-          <!-- /Empty State -->
-          <!-- /Allocation Table -->
-
+              <!-- /Timeline -->
+              <!-- Allocation Table -->
+              <!-- Resource Rows -->
+              <template if:true={resources.length}>
+                <template for:each={resources} for:item="resource">
+                  <c-gantt_chart_resource
+                    key={resource.Id}
+                    class="lwc-resource-component"
+                    is-resource-view={isResourceView}
+                    resource={resource}
+                    project-id={projectId}
+                    date-increment={view.slotSize}
+                    start-date={startDate}
+                    end-date={endDate}
+                    onrefresh={handleRefresh}>
+                  </c-gantt_chart_resource>
+                </template>
+              </template>
+              <!-- /Resource Rows -->
+              <!-- Empty State -->
+              <div
+                if:false={resources.length}
+                class="slds-text-align_center slds-p-around_medium">
+                <span class="slds-text-color_weak">No Resources to Show</span>
+              </div>
+              <!-- /Empty State -->
+              <!-- /Allocation Table -->
             </div>
           </div>
         </div>
