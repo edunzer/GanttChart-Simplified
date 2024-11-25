@@ -20,8 +20,8 @@ export default class GanttChart extends LightningElement {
   dateShift = 7; // determines how many days we shift by
 
   @track isFilterPanelOpen = false; // Track filter panel state
-  @track selectedResources = []; // Track selected resources
-  @track selectedProjects = []; // Track selected projects
+  @track selectedResourceId = null; // Track selected Resource
+  @track selectedProjectId = null; // Track selected Project  
 
   @track resourceModalData = {};
   @track startDate;
@@ -222,11 +222,20 @@ export default class GanttChart extends LightningElement {
     this.handleRefresh();
   }
 
+  handleResourceChange(event) {
+    this.selectedResourceId = event.detail.recordId;
+  }
+  
+  handleProjectChange(event) {
+    this.selectedProjectId = event.detail.recordId;
+  }  
+
   clearFilters() {
-    this.selectedResources = [];
-    this.selectedProjects = [];
+    this.selectedResourceId = null;
+    this.selectedProjectId = null;
     this.handleRefresh(); // Refresh data with cleared filters
   }
+  
 
   // New method for applying filters
   applyFilters() {
@@ -262,4 +271,5 @@ export default class GanttChart extends LightningElement {
             }));
         });
   }
+   
 }
