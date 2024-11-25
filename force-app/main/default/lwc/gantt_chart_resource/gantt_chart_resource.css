@@ -40,7 +40,14 @@
     border-left: 1px solid #dddbda;
     border-top: 1px solid #dddbda;
     min-width: 190px;
+    cursor: pointer; /* Indicate clickable items */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
 }
+
+.lwc-resource:hover {
+    background-color: rgba(128, 128, 128, 0.1); /* Highlight on hover */
+}
+
 /*** /Resource ***/
 
 .lwc-timeslots-container {

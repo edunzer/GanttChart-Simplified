@@ -1,22 +1,22 @@
 <template>
     <div class="slds-grid">
         <!-- Resource Info -->
-        <div if:false={isResourceView} class="slds-col slds-size_1-of-6 slds-p-around_small slds-truncate lwc-resource">
-            <div class="slds-media slds-media_center">
-                <div class="slds-media__figure">
-                    <lightning-icon icon-name="action:user" size="x-small"></lightning-icon>
-                </div>
-                <div class="slds-media__body slds-truncate">
-                    <h3 class="slds-text-body_default">
-                        {resource.Name}
-                    </h3>
-                    <h3 class="slds-text-body_small slds-text-color_weak">
-                        {resource.Default_Role__c}
-                    </h3>
-                </div>
+        <div if:false={isResourceView} class="slds-col slds-size_1-of-6 slds-p-around_small slds-truncate lwc-resource" data-id={resource.Id} onclick={handleResourceClick}>
+        <div class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+                <lightning-icon icon-name="action:user" size="x-small"></lightning-icon>
+            </div>
+            <div class="slds-media__body slds-truncate">
+                <h3 class="slds-text-body_default">
+                    {resource.Name}
+                </h3>
+                <h3 class="slds-text-body_small slds-text-color_weak">
+                    {resource.Default_Role__c}
+                </h3>
             </div>
         </div>
-        <!-- Resource Info -->
+        </div>
+        <!-- /Resource Info -->
 
         <!-- Days -->
         <div class="slds-col slds-is-relative">
