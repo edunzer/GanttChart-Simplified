@@ -227,6 +227,12 @@ export default class GanttChart extends LightningElement {
     this.selectedProjects = [];
     this.handleRefresh(); // Refresh data with cleared filters
   }
+
+  // New method for applying filters
+  applyFilters() {
+    this.handleRefresh(); // Trigger data refresh with the current filters
+  }
+
   
   
   /*** /Navigation ***/

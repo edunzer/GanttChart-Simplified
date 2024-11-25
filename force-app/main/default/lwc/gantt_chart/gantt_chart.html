@@ -94,10 +94,7 @@
             <div class="slds-col">
               <div class="slds-grid">
                 <template for:each={dates} for:item="date">
-                  <div
-                    key={date}
-                    class="slds-col lwc-timeline_month-container"
-                    style={date.style}>
+                  <div key={date} class="slds-col lwc-timeline_month-container" style={date.style}>
                     <div class="slds-grid">
                       <div class="slds-col slds-has-flexi-truncate">
                         <div
@@ -156,16 +153,19 @@
         <!-- Filter Panel -->
         <div if:true={isFilterPanelOpen} class="lwc-filter-panel">
           <div class="slds-p-around_medium slds-border_left">
-            <h3 class="slds-text-heading_small slds-m-bottom_medium">Filters</h3>
-            
-            <!-- Clear Filters Button -->
-            <lightning-button
-              label="Clear Filters"
-              variant="neutral"
-              class="slds-m-top_medium"
-              onclick={clearFilters}>
-            </lightning-button>
-            
+            <h3 class="slds-text-heading_small slds-m-bottom_medium slds-m-top_medium">Filters</h3>
+            <lightning-button-group>
+              <lightning-button
+                label="Apply Filters"
+                variant="brand"
+                onclick={applyFilters}>
+              </lightning-button>
+              <lightning-button
+                label="Clear Filters"
+                variant="neutral"
+                onclick={clearFilters}>
+              </lightning-button>
+            </lightning-button-group>
           </div>
         </div>
         <!-- /Filter Panel -->
