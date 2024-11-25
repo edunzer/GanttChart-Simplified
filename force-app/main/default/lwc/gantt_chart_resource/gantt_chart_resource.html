@@ -38,17 +38,19 @@
                         &nbsp;
                         <template for:each={project.allocations} for:item="allocation" for:index="allocationIndex">
                             <!-- Allocation -->
-                            <div key={allocation.Id} class={allocation.Id}>
+                            <div key={allocation.Id} class={allocation.Id} data-id={allocation.Id} onclick={handleAllocationClick}>
                                 
-                                <div title={allocation.Name} class={allocation.class} style={allocation.style} data-id={allocation.Id}
-                                    data-project={projectIndex} data-allocation={allocationIndex}>
-                                    
+                                <div title={allocation.Name} class={allocation.class} style={allocation.style} data-project={projectIndex} data-allocation={allocationIndex}>
                                     <div class="slds-grid slds-grid_vertical-align-center">
                                         <div class="slds-col slds-grow-none lwc-allocation_actions">
-                                            <lightning-button-icon icon-name="utility:event" variant="bare-inverse" size="small" data-id={allocation.Id}></lightning-button-icon>
+                                            <lightning-button-icon 
+                                                icon-name="utility:event" 
+                                                variant="bare-inverse" 
+                                                size="small" 
+                                                data-id={allocation.Id}>
+                                            </lightning-button-icon>
                                         </div>
                                     </div>
-                                    
                                 </div>
                                 
                                 <div class="slds-truncate slds-is-absolute lwc-allocation-label" style={allocation.labelStyle}>
@@ -59,6 +61,7 @@
                                         Unavailable
                                     </span>
                                 </div>
+
                             </div>
                             <!-- /Allocation -->
                         </template>
@@ -72,7 +75,6 @@
                 <!-- /Extra Space -->
             </div>
             <!-- /Allocations -->
-
         </div>
         <!-- /Days -->
     </div>

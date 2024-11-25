@@ -12,12 +12,18 @@
 /*** Allocations ***/
 .lwc-allocation {
     background-color: rgba(21, 137, 238); /* Default blue color */
-    border-radius: .25rem;
-    cursor: default; 
+    border-radius: 0.25rem;
+    cursor: pointer; /* Indicate clickable items */
     opacity: 0.85; /* Consistent opacity */
-    padding: .25rem;
+    padding: 0.25rem;
     pointer-events: auto;
     top: 0px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.lwc-allocation:hover {
+    background-color: rgba(21, 137, 238, 0.9); /* Slightly brighter on hover */
+    box-shadow: 0 0 5px rgba(21, 137, 238, 0.6); /* Add a glow effect */
 }
 
 .lwc-allocation-label {

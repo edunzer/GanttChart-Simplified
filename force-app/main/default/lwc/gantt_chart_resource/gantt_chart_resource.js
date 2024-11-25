@@ -1,7 +1,13 @@
 import { LightningElement, api, track } from "lwc";
+import { NavigationMixin } from "lightning/navigation";
 
-export default class GanttChartResource extends LightningElement {
+export default class GanttChartResource extends NavigationMixin(LightningElement) {
   @api isResourceView; // Resource page layout flag
+  @api startDate;
+  @api endDate;
+  @api dateIncrement;  
+  @track projects = [];  
+  
   @api
   get resource() {
     return this._resource;
@@ -10,11 +16,6 @@ export default class GanttChartResource extends LightningElement {
     this._resource = _resource;
     this.setProjects();
   }
-
-  // Dates
-  @api startDate;
-  @api endDate;
-  @api dateIncrement;
 
   @api
   refreshDates(startDate, endDate, dateIncrement) {
@@ -34,7 +35,6 @@ export default class GanttChartResource extends LightningElement {
                 start: date.getTime(),
                 end: null // Initialize the end property
             };
-
             if (dateIncrement > 1) {
                 let end = new Date(date);
                 end.setDate(end.getDate() + dateIncrement - 1);
@@ -42,33 +42,25 @@ export default class GanttChartResource extends LightningElement {
             } else {
                 time.end = date.getTime();
             }
-
             // Check if today falls within the time slot
             if (today >= time.start && today <= time.end) {
                 time.class += " lwc-is-today";
             }
-
             // Highlight weekends if applicable
             if (dateIncrement === 1 && date.getDay() === 0) {
                 time.class += " lwc-is-week-end";
             }
-
             times.push(time);
         }
-
         // Assign the calculated times to the component
         this.times = times;
         this.startDate = startDate;
         this.endDate = endDate;
         this.dateIncrement = dateIncrement;
-
         // Update related projects after setting times
         this.setProjects();
     }
   }
-
-
-  @track projects = [];
 
   connectedCallback() {
     if (this.startDate && this.endDate && this.dateIncrement) {
@@ -76,13 +68,10 @@ export default class GanttChartResource extends LightningElement {
     }
   }
 
-
   prepareAllocationDisplay(allocation) {
     const totalSlots = this.times?.length || 1; // Fallback to 1 to avoid division by undefined
-
     // Calculate Classes
     let classes = ["slds-is-absolute", "lwc-allocation"];
-
     // Calculate Styles
     let styles = [
         `left: ${(allocation.left / totalSlots) * 100}%`,
@@ -91,7 +80,6 @@ export default class GanttChartResource extends LightningElement {
         "pointer-events: auto",
         "transition: none"
     ];
-
     // Calculate Label Styles
     let left = allocation.left / totalSlots < 0 ? 0 : allocation.left / totalSlots;
     let right =
@@ -102,7 +90,6 @@ export default class GanttChartResource extends LightningElement {
         `left: calc(${left * 100}% + 15px)`,
         `right: calc(${right * 100}% + 30px)`
     ];
-
     // Attach Calculated Styles to Allocation
     allocation.class = classes.join(" ");
     allocation.style = styles.join("; ");
@@ -110,9 +97,6 @@ export default class GanttChartResource extends LightningElement {
 
     return allocation;
     }
-
-
-
   // Replace in `setProjects`
   setProjects() {
     this.projects = Object.keys(this._resource.allocationsByProject).map(projectId => {
@@ -123,5 +107,23 @@ export default class GanttChartResource extends LightningElement {
         return { id: projectId, allocations };
     });
   }
+
+  handleAllocationClick(event) {
+    // Retrieve the data-id from the clicked element or its parent
+    const allocationId = event.currentTarget.dataset.id;
+    console.log('Allocation Clicked:', allocationId); // Debugging log
+    if (allocationId) {
+        // Navigate to the allocation record page
+        this[NavigationMixin.Navigate]({
+            type: "standard__recordPage",
+            attributes: {
+                recordId: allocationId,
+                objectApiName: "Allocation__c", // Replace with the correct API name
+                actionName: "view",
+            },
+        });
+    }
+  }
+
 
 }
