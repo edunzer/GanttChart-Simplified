@@ -4,6 +4,7 @@
       <!-- Header Bar -->
       <div class="slds-p-around_medium slds-border_bottom">
         <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+          <!-- View Select, Date Range, Navigation -->
           
           <!-- View Select (Far Left) -->
           <div class="slds-col slds-grow-none">
@@ -49,7 +50,7 @@
                 </lightning-button-icon>
               </lightning-button-group>
             </div>
-            <div class="slds-show_inline-block">
+            <div class="slds-show_inline-block slds-m-right_small">
               <lightning-input
                 label="Date"
                 type="date"
@@ -60,6 +61,13 @@
                 onchange={navigateToDay}>
               </lightning-input>
             </div>
+            <div class="slds-show_inline-block slds-m-right_small">
+              <lightning-button-icon
+                icon-name="utility:filterList"
+                variant="border-filled"
+                onclick={toggleFilterPanel}>
+              </lightning-button-icon>
+            </div>
           </div>
           <!-- /Date Navigation -->
 
@@ -67,10 +75,14 @@
       </div>
       <!-- /Header Bar -->
 
-      <!-- Gantt Chart -->
-      <div class="slds-scrollable_x">
-        <div class="slds-p-around_medium lwc-chart_container">
-          <!-- Timeline -->
+      <div class="slds-grid">
+        <!-- Main Content (Gantt Chart) -->
+        <div class="slds-col lwc-main-content">
+          <div class="slds-scrollable_x">
+            <div class="slds-p-around_medium lwc-chart_container">
+              <!-- Timeline, Allocation Table -->
+              
+              <!-- Timeline -->
           <div class="slds-grid lwc-timeline">
             <div
               if:false={isResourceView}
@@ -136,9 +148,28 @@
           </div>
           <!-- /Empty State -->
           <!-- /Allocation Table -->
+
+            </div>
+          </div>
         </div>
+        <!-- /Main Content -->
+        <!-- Filter Panel -->
+        <div if:true={isFilterPanelOpen} class="lwc-filter-panel">
+          <div class="slds-p-around_medium slds-border_left">
+            <h3 class="slds-text-heading_small slds-m-bottom_medium">Filters</h3>
+            
+            <!-- Clear Filters Button -->
+            <lightning-button
+              label="Clear Filters"
+              variant="neutral"
+              class="slds-m-top_medium"
+              onclick={clearFilters}>
+            </lightning-button>
+            
+          </div>
+        </div>
+        <!-- /Filter Panel -->
       </div>
-      <!-- /Gantt Chart -->
     </div>
   </div>
 </template>

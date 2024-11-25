@@ -3,18 +3,17 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import momentJS from "@salesforce/resourceUrl/momentJS";
 import { loadScript } from "lightning/platformResourceLoader";
 import getChartData from "@salesforce/apex/ganttChart.getChartData";
+import getResources from "@salesforce/apex/ganttChart.getResources";
+import getProjects from "@salesforce/apex/ganttChart.getProjects";
 
 export default class GanttChart extends LightningElement {
   @api recordId = "";
   @api objectApiName;
+  @api defaultView;
 
   @track isResourceView;
   @track isProjectView;
 
-  // design attributes
-  @api defaultView;
-
-  // navigation
   @track startDateUTC; // sending to backend using time
   @track endDateUTC; // sending to backend using time
   @track formattedStartDate; // Title (Date Range)
@@ -22,7 +21,16 @@ export default class GanttChart extends LightningElement {
   @track dates = []; // Dates (Header)
   dateShift = 7; // determines how many days we shift by
 
-  // options
+  @track isFilterPanelOpen = false; // Track filter panel state
+  @track selectedResources = []; // Track selected resources
+  @track selectedProjects = []; // Track selected projects
+
+  @track resourceModalData = {};
+  @track startDate;
+  @track endDate;
+  @track projectId;
+  @track resources = [];
+
   @track datePickerString; // Date Navigation
   @track view = {
     // View Select
@@ -49,11 +57,6 @@ export default class GanttChart extends LightningElement {
     projects: [],
     projectIds: [],
   };
-  @track resourceModalData = {};
-  @track startDate;
-  @track endDate;
-  @track projectId;
-  @track resources = [];
 
   constructor() {
     super();
@@ -172,6 +175,16 @@ export default class GanttChart extends LightningElement {
     });
   }
 
+  toggleFilterPanel() {
+    this.isFilterPanelOpen = !this.isFilterPanelOpen;
+  }
+
+  get filterPanelClass() {
+    return this.isFilterPanelOpen
+      ? "slds-col slds-size_1-of-6 lwc-filter-panel"
+      : "slds-col lwc-filter-panel-collapsed";
+  }
+
   navigateToToday() {
     this.setStartDate(new Date());
     this.handleRefresh();
@@ -210,6 +223,14 @@ export default class GanttChart extends LightningElement {
     this.setDateHeaders();
     this.handleRefresh();
   }
+
+  clearFilters() {
+    this.selectedResources = [];
+    this.selectedProjects = [];
+    this.handleRefresh(); // Refresh data with cleared filters
+  }
+  
+  
   /*** /Navigation ***/
 
   handleRefresh() {
