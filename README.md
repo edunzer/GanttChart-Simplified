@@ -32,6 +32,10 @@ Depending on what type of page you put the component on the filtering and view c
   - A **Today** button for quick navigation.
   - Direct date selection using a date picker.
 
+### Colapsable Filter Panel
+- Simple Filtering abilties that work with the dynamic record page filtering
+![Modal Popup Example](./img/Screenshot%202024-11-26%20130728.png)
+
 ### Efficient Data Fetching
 - Leverages an Apex controller (`ganttChart`) to fetch and process data.
 - Optimized queries for performance, ensuring only relevant data is retrieved.
