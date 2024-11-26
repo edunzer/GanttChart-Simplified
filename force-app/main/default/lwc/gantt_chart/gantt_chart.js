@@ -258,16 +258,18 @@ export default class GanttChart extends LightningElement {
   /*** /Navigation ***/
 
   handleRefresh() {
-    // Map recordId to appropriate filter based on objectApiName
+    // Determine context and set default filter values
     if (this.objectApiName === "Resource__c") {
-      this.selectedResourceId = this.recordId; // Treat recordId as Resource ID
-      this.selectedProjectId = null; // Clear Project ID
+      // Resource context
+      this.selectedResourceId = this.recordId; // Use recordId as Resource ID
+      // Accept user-provided project filter
     } else if (this.objectApiName === "Project__c") {
-      this.selectedProjectId = this.recordId; // Treat recordId as Project ID
-      this.selectedResourceId = null; // Clear Resource ID
+      // Project context
+      this.selectedProjectId = this.recordId; // Use recordId as Project ID
+      // Accept user-provided resource filter
     }
   
-    // Call Apex method with the filters
+    // Call Apex with the updated filters
     getChartData({
       resourceId: this.selectedResourceId ? this.selectedResourceId : null,
       projectId: this.selectedProjectId ? this.selectedProjectId : null,
@@ -276,13 +278,16 @@ export default class GanttChart extends LightningElement {
       slotSize: this.view.slotSize
     })
       .then(data => {
+        // Set flags for UI rendering
         this.isResourceView = this.objectApiName === "Resource__c";
         this.isProjectView = this.objectApiName === "Project__c";
   
+        // Update data
         this.resources = data.resources;
         this.projects = data.projects;
       })
       .catch(error => {
+        // Show error notification
         this.dispatchEvent(
           new ShowToastEvent({
             title: "Error fetching chart data",
@@ -292,5 +297,6 @@ export default class GanttChart extends LightningElement {
         );
       });
   }
+  
    
 }
