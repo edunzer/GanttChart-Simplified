@@ -147,22 +147,28 @@
             <h3 class="slds-text-heading_small slds-m-bottom_medium slds-m-top_medium">Filters</h3>
 
             <!-- Resource Filter -->
-            <lightning-record-picker
-              label="Resource"
-              placeholder="Search Resources..."
-              object-api-name="Resource__c"
-              onchange={handleResourceChange}>
-            </lightning-record-picker>
+            <template if:false={isResourceView}>
+              <lightning-record-picker
+                data-id="resourcePicker"
+                label="Resource"
+                placeholder="Search Resources..."
+                object-api-name="Resource__c"
+                onchange={handleResourceChange}>
+              </lightning-record-picker>
+            </template>
 
             <!-- Project Filter -->
-            <lightning-record-picker
-              label="Project"
-              placeholder="Search Projects..."
-              object-api-name="Project__c"
-              onchange={handleProjectChange}>
-            </lightning-record-picker>
+            <template if:false={isProjectView}>
+              <lightning-record-picker
+                data-id="projectPicker"
+                label="Project"
+                placeholder="Search Projects..."
+                object-api-name="Project__c"
+                onchange={handleProjectChange}>
+              </lightning-record-picker>
+            </template>
 
-            <lightning-button-group>
+            <lightning-button-group class="slds-m-top_medium">
               <lightning-button
                 label="Apply Filters"
                 variant="brand"
