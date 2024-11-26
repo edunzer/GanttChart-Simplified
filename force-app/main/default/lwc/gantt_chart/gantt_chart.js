@@ -231,18 +231,29 @@ export default class GanttChart extends LightningElement {
   }  
 
   clearFilters() {
-    this.selectedResourceId = null;
-    this.selectedProjectId = null;
-    this.handleRefresh(); // Refresh data with cleared filters
-  }
+    // Reset selected IDs to the inherited recordId context
+    this.selectedResourceId = this.objectApiName === "Resource__c" ? this.recordId : null;
+    this.selectedProjectId = this.objectApiName === "Project__c" ? this.recordId : null;
   
+    // Clear the selection in the lightning-record-picker elements
+    const resourcePicker = this.template.querySelector('[data-id="resourcePicker"]');
+    const projectPicker = this.template.querySelector('[data-id="projectPicker"]');
+  
+    if (resourcePicker) {
+      resourcePicker.clearSelection(); // Clear Resource picker
+    }
+    if (projectPicker) {
+      projectPicker.clearSelection(); // Clear Project picker
+    }
+  
+    // Refresh the data with cleared filters
+    this.handleRefresh();
+  }
 
   // New method for applying filters
   applyFilters() {
     this.handleRefresh(); // Trigger data refresh with the current filters
   }
-
-  
   
   /*** /Navigation ***/
 
