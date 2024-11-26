@@ -4,7 +4,7 @@
       <!-- Header Bar -->
       <div class="slds-p-around_medium slds-border_bottom">
         <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-          
+          <!-- View Select, Date Range, Navigation -->
           <!-- View Select (Far Left) -->
           <div class="slds-col slds-grow-none">
             <lightning-combobox
@@ -16,7 +16,6 @@
             </lightning-combobox>
           </div>
           <!-- /View Select -->
-
           <!-- Title (Date Range, Centered) -->
           <div class="slds-col slds-text-align_center slds-grid slds-grid_align-center slds-grid_vertical-align-center">
             <div class="slds-box slds-p-horizontal_small slds-m-right_small" style="border: 1px solid #747474; border-radius: 0.25rem; padding: 0 8px; line-height: 2rem;">
@@ -28,7 +27,6 @@
             </div>
           </div>
           <!-- /Title (Date Range) -->
-
           <!-- Date Navigation (Far Right) -->
           <div class="slds-col slds-grow-none slds-grid slds-grid_align-end">
             <div class="slds-show_inline-block slds-m-right_small">
@@ -49,7 +47,7 @@
                 </lightning-button-icon>
               </lightning-button-group>
             </div>
-            <div class="slds-show_inline-block">
+            <div class="slds-show_inline-block slds-m-right_small">
               <lightning-input
                 label="Date"
                 type="date"
@@ -60,85 +58,132 @@
                 onchange={navigateToDay}>
               </lightning-input>
             </div>
+            <div class="slds-show_inline-block slds-m-right_small">
+              <lightning-button-icon
+                icon-name="utility:filterList"
+                variant="border-filled"
+                onclick={toggleFilterPanel}>
+              </lightning-button-icon>
+            </div>
           </div>
           <!-- /Date Navigation -->
-
         </div>
       </div>
       <!-- /Header Bar -->
-
-      <!-- Gantt Chart -->
-      <div class="slds-scrollable_x">
-        <div class="slds-p-around_medium lwc-chart_container">
-          <!-- Timeline -->
-          <div class="slds-grid lwc-timeline">
-            <div
-              if:false={isResourceView}
-              class="slds-col slds-size_1-of-6 slds-align-bottom">
-              <div class="slds-text-heading_medium slds-p-around_small">
-                Resources
-              </div>
-            </div>
-            <div class="slds-col">
-              <div class="slds-grid">
-                <template for:each={dates} for:item="date">
-                  <div
-                    key={date}
-                    class="slds-col lwc-timeline_month-container"
-                    style={date.style}>
-                    <div class="slds-grid">
-                      <div class="slds-col slds-has-flexi-truncate">
-                        <div
-                          class="lwc-timeline_month slds-p-around_xx-small slds-theme_shade slds-text-align_center slds-text-color_weak slds-text-body_small slds-m-horizontal_x-small slds-truncate">
-                          {date.name}
+      <div class="slds-grid">
+        <!-- Main Content (Gantt Chart) -->
+        <div class="slds-col lwc-main-content">
+          <div class="slds-scrollable_x">
+            <div class="slds-p-around_medium lwc-chart_container">
+              <!-- Timeline, Allocation Table -->
+              <!-- Timeline -->
+              <div class="slds-grid lwc-timeline">
+                <div
+                  if:false={isResourceView}
+                  class="slds-col slds-size_1-of-6 slds-align-bottom">
+                  <div class="slds-text-heading_medium slds-p-around_small">
+                    Resources
+                  </div>
+                </div>
+                <div class="slds-col">
+                  <div class="slds-grid">
+                    <template for:each={dates} for:item="date">
+                      <div key={date} class="slds-col lwc-timeline_month-container" style={date.style}>
+                        <div class="slds-grid">
+                          <div class="slds-col slds-has-flexi-truncate">
+                            <div
+                              class="lwc-timeline_month slds-p-around_xx-small slds-theme_shade slds-text-align_center slds-text-color_weak slds-text-body_small slds-m-horizontal_x-small slds-truncate">
+                              {date.name}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="slds-grid">
+                          <template for:each={date.days} for:item="day">
+                            <div key={day} class={day.class}>
+                              <div if:true={day.dayName}>{day.dayName}</div>
+                              <div>{day.label}</div>
+                            </div>
+                          </template>
                         </div>
                       </div>
-                    </div>
-                    <div class="slds-grid">
-                      <template for:each={date.days} for:item="day">
-                        <div key={day} class={day.class}>
-                          <div if:true={day.dayName}>{day.dayName}</div>
-                          <div>{day.label}</div>
-                        </div>
-                      </template>
-                    </div>
+                    </template>
                   </div>
-                </template>
+                </div>
               </div>
+              <!-- /Timeline -->
+              <!-- Allocation Table -->
+              <!-- Resource Rows -->
+              <template if:true={resources.length}>
+                <template for:each={resources} for:item="resource">
+                  <c-gantt_chart_resource
+                    key={resource.Id}
+                    class="lwc-resource-component"
+                    is-resource-view={isResourceView}
+                    resource={resource}
+                    project-id={projectId}
+                    date-increment={view.slotSize}
+                    start-date={startDate}
+                    end-date={endDate}
+                    onrefresh={handleRefresh}>
+                  </c-gantt_chart_resource>
+                </template>
+              </template>
+              <!-- /Resource Rows -->
+              <!-- Empty State -->
+              <div
+                if:false={resources.length}
+                class="slds-text-align_center slds-p-around_medium">
+                <span class="slds-text-color_weak">No Resources to Show</span>
+              </div>
+              <!-- /Empty State -->
+              <!-- /Allocation Table -->
             </div>
           </div>
-          <!-- /Timeline -->
-
-          <!-- Allocation Table -->
-          <!-- Resource Rows -->
-          <template if:true={resources.length}>
-            <template for:each={resources} for:item="resource">
-              <c-gantt_chart_resource
-                key={resource.Id}
-                class="lwc-resource-component"
-                is-resource-view={isResourceView}
-                resource={resource}
-                project-id={projectId}
-                date-increment={view.slotSize}
-                start-date={startDate}
-                end-date={endDate}
-                onrefresh={handleRefresh}>
-              </c-gantt_chart_resource>
-            </template>
-          </template>
-          <!-- /Resource Rows -->
-
-          <!-- Empty State -->
-          <div
-            if:false={resources.length}
-            class="slds-text-align_center slds-p-around_medium">
-            <span class="slds-text-color_weak">No Resources to Show</span>
-          </div>
-          <!-- /Empty State -->
-          <!-- /Allocation Table -->
         </div>
+        <!-- /Main Content -->
+        <!-- Filter Panel -->
+        <div if:true={isFilterPanelOpen} class="lwc-filter-panel">
+          <div class="slds-p-around_medium slds-border_left">
+            <h3 class="slds-text-heading_small slds-m-bottom_medium slds-m-top_medium">Filters</h3>
+
+            <!-- Resource Filter -->
+            <template if:false={isResourceView}>
+              <lightning-record-picker
+                data-id="resourcePicker"
+                label="Resource"
+                placeholder="Search Resources..."
+                object-api-name="Resource__c"
+                onchange={handleResourceChange}>
+              </lightning-record-picker>
+            </template>
+
+            <!-- Project Filter -->
+            <template if:false={isProjectView}>
+              <lightning-record-picker
+                data-id="projectPicker"
+                label="Project"
+                placeholder="Search Projects..."
+                object-api-name="Project__c"
+                onchange={handleProjectChange}>
+              </lightning-record-picker>
+            </template>
+
+            <lightning-button-group class="slds-m-top_medium">
+              <lightning-button
+                label="Apply Filters"
+                variant="brand"
+                onclick={applyFilters}>
+              </lightning-button>
+              <lightning-button
+                label="Clear Filters"
+                variant="neutral"
+                onclick={clearFilters}>
+              </lightning-button>
+            </lightning-button-group>
+          </div>
+        </div>
+        <!-- /Filter Panel -->
       </div>
-      <!-- /Gantt Chart -->
     </div>
   </div>
 </template>

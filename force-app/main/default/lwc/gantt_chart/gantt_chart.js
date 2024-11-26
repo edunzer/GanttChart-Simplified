@@ -7,14 +7,11 @@ import getChartData from "@salesforce/apex/ganttChart.getChartData";
 export default class GanttChart extends LightningElement {
   @api recordId = "";
   @api objectApiName;
+  @api defaultView;
 
   @track isResourceView;
   @track isProjectView;
 
-  // design attributes
-  @api defaultView;
-
-  // navigation
   @track startDateUTC; // sending to backend using time
   @track endDateUTC; // sending to backend using time
   @track formattedStartDate; // Title (Date Range)
@@ -22,7 +19,16 @@ export default class GanttChart extends LightningElement {
   @track dates = []; // Dates (Header)
   dateShift = 7; // determines how many days we shift by
 
-  // options
+  @track isFilterPanelOpen = false; // Track filter panel state
+  @track selectedResourceId = null; // Track selected Resource
+  @track selectedProjectId = null; // Track selected Project  
+
+  @track resourceModalData = {};
+  @track startDate;
+  @track endDate;
+  @track projectId;
+  @track resources = [];
+
   @track datePickerString; // Date Navigation
   @track view = {
     // View Select
@@ -49,11 +55,6 @@ export default class GanttChart extends LightningElement {
     projects: [],
     projectIds: [],
   };
-  @track resourceModalData = {};
-  @track startDate;
-  @track endDate;
-  @track projectId;
-  @track resources = [];
 
   constructor() {
     super();
@@ -172,6 +173,16 @@ export default class GanttChart extends LightningElement {
     });
   }
 
+  toggleFilterPanel() {
+    this.isFilterPanelOpen = !this.isFilterPanelOpen;
+  }
+
+  get filterPanelClass() {
+    return this.isFilterPanelOpen
+      ? "slds-col slds-size_1-of-6 lwc-filter-panel"
+      : "slds-col lwc-filter-panel-collapsed";
+  }
+
   navigateToToday() {
     this.setStartDate(new Date());
     this.handleRefresh();
@@ -210,31 +221,82 @@ export default class GanttChart extends LightningElement {
     this.setDateHeaders();
     this.handleRefresh();
   }
+
+  handleResourceChange(event) {
+    this.selectedResourceId = event.detail.recordId;
+  }
+  
+  handleProjectChange(event) {
+    this.selectedProjectId = event.detail.recordId;
+  }  
+
+  clearFilters() {
+    // Reset selected IDs to the inherited recordId context
+    this.selectedResourceId = this.objectApiName === "Resource__c" ? this.recordId : null;
+    this.selectedProjectId = this.objectApiName === "Project__c" ? this.recordId : null;
+  
+    // Clear the selection in the lightning-record-picker elements
+    const resourcePicker = this.template.querySelector('[data-id="resourcePicker"]');
+    const projectPicker = this.template.querySelector('[data-id="projectPicker"]');
+  
+    if (resourcePicker) {
+      resourcePicker.clearSelection(); // Clear Resource picker
+    }
+    if (projectPicker) {
+      projectPicker.clearSelection(); // Clear Project picker
+    }
+  
+    // Refresh the data with cleared filters
+    this.handleRefresh();
+  }
+
+  // New method for applying filters
+  applyFilters() {
+    this.handleRefresh(); // Trigger data refresh with the current filters
+  }
+  
   /*** /Navigation ***/
 
   handleRefresh() {
-    let self = this;
-
+    // Determine context and set default filter values
+    if (this.objectApiName === "Resource__c") {
+      // Resource context
+      this.selectedResourceId = this.recordId; // Use recordId as Resource ID
+      // Accept user-provided project filter
+    } else if (this.objectApiName === "Project__c") {
+      // Project context
+      this.selectedProjectId = this.recordId; // Use recordId as Project ID
+      // Accept user-provided resource filter
+    }
+  
+    // Call Apex with the updated filters
     getChartData({
-        recordId: self.recordId ? self.recordId : '',
-        startTime: self.startDateUTC,
-        endTime: self.endDateUTC,
-        slotSize: self.view.slotSize,
-        filterProjects: self._filterData.projectIds, // Filtering happens here in Apex
+      resourceId: this.selectedResourceId ? this.selectedResourceId : null,
+      projectId: this.selectedProjectId ? this.selectedProjectId : null,
+      startTime: this.startDateUTC,
+      endTime: this.endDateUTC,
+      slotSize: this.view.slotSize
     })
-        .then(data => {
-            self.isResourceView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Resource__c');
-            self.isProjectView = typeof self.objectApiName !== 'undefined' && self.objectApiName.endsWith('Project__c');
-
-            self.resources = data.resources;
-            self.projects = data.projects;
-            self.projectId = data.projectId;
-        })
-        .catch(error => {
-            this.dispatchEvent(new ShowToastEvent({
-                message: error.body.message,
-                variant: 'error'
-            }));
-        });
+      .then(data => {
+        // Set flags for UI rendering
+        this.isResourceView = this.objectApiName === "Resource__c";
+        this.isProjectView = this.objectApiName === "Project__c";
+  
+        // Update data
+        this.resources = data.resources;
+        this.projects = data.projects;
+      })
+      .catch(error => {
+        // Show error notification
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Error fetching chart data",
+            message: error.body.message,
+            variant: "error"
+          })
+        );
+      });
   }
+  
+   
 }

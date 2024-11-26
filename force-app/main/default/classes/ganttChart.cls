@@ -1,6 +1,6 @@
 public with sharing class ganttChart {
     @AuraEnabled
-    public static Map<String, Object> getChartData(String recordId, String startTime, String endTime, Integer slotSize, List<String> filterProjects) {
+    public static Map<String, Object> getChartData(String resourceId, String projectId, String startTime, String endTime, Integer slotSize) {
         Map<String, Object> data = new Map<String, Object>();
         try {
             // Parse date ranges
@@ -13,12 +13,12 @@ public with sharing class ganttChart {
                 'FROM Allocation__c WHERE Start_Date__c <= :endDate AND End_Date__c >= :startDate';
 
             // Add filters dynamically
-            if (!String.isEmpty(recordId)) {
-                baseQuery += ' AND (Project__c = :recordId OR Resource__c = :recordId)';
+            if (!String.isEmpty(resourceId)) {
+                baseQuery += ' AND Resource__c = :resourceId';
             }
-            if (filterProjects != null && !filterProjects.isEmpty()) {
-                baseQuery += ' AND Project__c IN :filterProjects';
-            }
+            if (!String.isEmpty(projectId)) {
+                baseQuery += ' AND Project__c = :projectId';
+            }            
 
             // Add sorting and limit
             baseQuery += ' ORDER BY Resource__r.Name, Project__r.Name, Start_Date__c LIMIT 500';
