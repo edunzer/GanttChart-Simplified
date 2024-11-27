@@ -35,15 +35,23 @@ export default class GanttChart extends LightningElement {
     options: [
       {
         label: "By Day",
-        value: "1/14"
+        value: "1/14" // 1 day per slot, 14 total slots
       },
       {
         label: "By Week",
-        value: "7/10"
+        value: "7/10" // 7 days per slot, 10 total slots
+      },
+      {
+        label: "By Month",
+        value: "30/12" // 1 month per slot, 12 total slots
+      },
+      {
+        label: "By Quarter",
+        value: "90/4" // 3 months per slot, 4 total slots
       }
     ],
     slotSize: 1,
-    slots: 1
+    slots: 1    
   };
 
   @track filterModalData = {
@@ -68,13 +76,23 @@ export default class GanttChart extends LightningElement {
         case "By Day":
           this.setView("1/14");
           break;
-        default:
+        case "By Week":
           this.setView("7/10");
+          break;
+        case "By Month":
+          this.setView("30/12");
+          break;
+        case "By Quarter":
+          this.setView("90/4");
+          break;
+        default:
+          this.setView("1/14"); // Default to "By Day"
       }
       this.setStartDate(new Date());
       this.handleRefresh();
     });
   }
+  
 
   /*** Navigation ***/
   setStartDate(_startDate) {
@@ -106,72 +124,85 @@ export default class GanttChart extends LightningElement {
   }
 
   setDateHeaders() {
-    this.endDate = moment(this.startDate)
-      .add(this.view.slots * this.view.slotSize - 1, "days")
-      .toDate();
-    this.endDateUTC =
-      moment(this.endDate)
-        .utc()
-        .valueOf() -
-      moment(this.endDate).utcOffset() * 60 * 1000 +
-      "";
-    this.formattedEndDate = this.endDate.toLocaleDateString();
-
     let today = new Date();
     today.setHours(0, 0, 0, 0);
     today = today.getTime();
 
     let dates = {};
+    let date = moment(this.startDate);
 
-    for (let date = moment(this.startDate); date <= moment(this.endDate); date.add(this.view.slotSize, "days")) {
-      let index = date.format("YYYYMM");
-      if (!dates[index]) {
-        dates[index] = {
-          dayName: '',
-          name: date.format("MMMM"),
-          days: []
-        };
-      }
-
-      let day = {
-        class: "slds-col slds-p-vertical_x-small slds-m-top_x-small lwc-timeline_day",
-        label: date.format("M/D"),
-        start: date.toDate()
-      };
-
-      if (this.view.slotSize > 1) {
-        let end = moment(date).add(this.view.slotSize - 1, "days");
-        day.end = end.toDate();
-      } else {
-        day.end = date.toDate();
-        day.dayName = date.format("ddd");
-        if (date.day() === 0) {
-          day.class = day.class + " lwc-is-week-end";
+    // Loop based on the number of slots
+    for (let i = 0; i < this.view.slots; i++) {
+        let index = date.format("YYYYMM");
+        if (!dates[index]) {
+            dates[index] = {
+                dayName: "",
+                name: "",
+                days: []
+            };
         }
-      }
 
-      if (today >= day.start && today <= day.end) {
-        day.class += " lwc-is-today";
-      }
+        let day = {
+            class: "slds-col slds-p-vertical_x-small slds-m-top_x-small lwc-timeline_day",
+            label: "",
+            start: date.toDate(),
+            end: null
+        };
 
-      dates[index].days.push(day);
-      dates[index].style =
-        "width: calc(" +
-        dates[index].days.length +
-        "/" +
-        this.view.slots +
-        "*100%)";
+        if (this.view.slotSize === 1) {
+            // By Day: Each column is 1 day
+            day.label = date.format("M/D");
+            day.end = date.toDate();
+            date.add(1, "days");
+        } else if (this.view.slotSize === 7) {
+            // By Week: Each column is 7 days
+            day.label = `Week of ${date.format("MMM D")}`;
+            day.end = moment(date).add(6, "days").toDate();
+            date.add(7, "days");
+        } else if (this.view.slotSize === 30) {
+            // By Month: Dynamically calculate days in the month
+            day.label = date.format("MMMM YYYY");
+            day.end = date.endOf("month").toDate();
+            date.add(1, "month");
+        } else if (this.view.slotSize === 90) {
+            // By Quarter: Dynamically calculate days in the quarter
+            const quarter = Math.ceil((date.month() + 1) / 3); // Calculate quarter
+            day.label = `Q${quarter} ${date.year()}`;
+            day.end = moment(date).add(2, "months").endOf("month").toDate();
+            date.add(3, "months");
+        }
+
+        // Highlight today's column
+        if (today >= day.start.getTime() && today <= day.end.getTime()) {
+            day.class += " lwc-is-today";
+        }
+
+        // Add the day to the dates object
+        dates[index].days.push(day);
+        dates[index].style = `width: calc(1 / ${this.view.slots} * 100%)`;
     }
 
-    // reorder index
+    // Convert dates object into an array for rendering
     this.dates = Object.values(dates);
 
+    // Calculate the end date for the timeline
+    this.endDate = date.toDate();
+    this.endDateUTC =
+        moment(this.endDate)
+            .utc()
+            .valueOf() -
+        moment(this.endDate).utcOffset() * 60 * 1000 +
+        "";
+    this.formattedEndDate = this.endDate.toLocaleDateString();
+
+    // Refresh associated resources
     Array.from(
-      this.template.querySelectorAll("c-gantt_chart_resource")
+        this.template.querySelectorAll("c-gantt_chart_resource")
     ).forEach(resource => {
-      resource.refreshDates(this.startDate, this.endDate, this.view.slotSize);
+        resource.refreshDates(this.startDate, this.endDate, this.view.slotSize);
     });
   }
+
 
   toggleFilterPanel() {
     this.isFilterPanelOpen = !this.isFilterPanelOpen;
