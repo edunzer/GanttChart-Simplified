@@ -139,7 +139,7 @@ export default class GanttChart extends LightningElement {
         startDate: this.startDate,
         slotSize: this.view.slotSize,
         slots: this.view.slots,
-    }); // Log timeline generation parameters
+    });
 
     // Loop based on the number of slots
     for (let i = 0; i < this.view.slots; i++) {
@@ -166,7 +166,9 @@ export default class GanttChart extends LightningElement {
             date.add(1, "days");
         } else if (this.view.slotSize === 7) {
             // By Week: Each column spans 7 days
-            day.label = `Week of ${date.format("MMM D")}`;
+            let startLabel = date.format("MMM D");
+            let endLabel = moment(date).add(6, "days").format("MMM D");
+            day.label = `${startLabel} - ${endLabel}`; // Set range of dates
             day.end = moment(date).add(6, "days").toDate();
             date.add(7, "days");
         } else if (this.view.slotSize === 30) {
@@ -176,8 +178,10 @@ export default class GanttChart extends LightningElement {
             date.add(1, "month");
         } else if (this.view.slotSize === 90) {
             // By Quarter: Each column spans 3 months
-            const quarter = Math.ceil((date.month() + 1) / 3); // Calculate quarter
-            day.label = `Q${quarter} ${date.year()}`;
+            const startMonth = date.format("MMM");
+            const endMonth = moment(date).add(2, "months").format("MMM");
+            day.label = `Q${Math.ceil((date.month() + 1) / 3)} ${date.year()}`; // Example: Q1 2024
+            dates[index].name = `${startMonth} - ${endMonth}`; // Set range of months in wrapper
             day.end = moment(date).add(2, "months").endOf("month").toDate();
             date.add(3, "months");
         }
@@ -187,7 +191,7 @@ export default class GanttChart extends LightningElement {
             start: day.start,
             end: day.end,
             class: day.class,
-        }); // Log each day/slot details
+        });
 
         // Highlight today's column
         if (today >= day.start.getTime() && today <= day.end.getTime()) {
@@ -206,7 +210,7 @@ export default class GanttChart extends LightningElement {
     // Convert dates object into an array for rendering
     this.dates = Object.values(dates);
 
-    console.log("Final Dates Array:", this.dates); // Log the final dates array
+    console.log("Final Dates Array:", this.dates);
 
     // Calculate the end date for the timeline
     this.endDate = date.toDate();
@@ -219,7 +223,7 @@ export default class GanttChart extends LightningElement {
     console.log("Timeline Range:", {
         startDate: this.startDate,
         endDate: this.endDate,
-    }); // Log the timeline range
+    });
 
     // Refresh associated resources
     Array.from(
@@ -228,6 +232,7 @@ export default class GanttChart extends LightningElement {
         resource.refreshDates(this.startDate, this.endDate, this.view.slotSize);
     });
 }
+
 
 
   toggleFilterPanel() {
