@@ -70,26 +70,30 @@ export default class GanttChart extends LightningElement {
 
   connectedCallback() {
     Promise.all([
-      loadScript(this, momentJS)
+        loadScript(this, momentJS)
     ]).then(() => {
-      switch (this.defaultView) {
-        case "By Day":
-          this.setView("1/14");
-          break;
-        case "By Week":
-          this.setView("7/10");
-          break;
-        case "By Month":
-          this.setView("30/12");
-          break;
-        case "By Quarter":
-          this.setView("90/4");
-          break;
-        default:
-          this.setView("1/14"); // Default to "By Day"
-      }
-      this.setStartDate(new Date());
-      this.handleRefresh();
+        console.log("Default View:", this.defaultView); // Log the default view
+
+        switch (this.defaultView) {
+            case "By Day":
+                this.setView("1/14");
+                break;
+            case "By Week":
+                this.setView("7/10");
+                break;
+            case "By Month":
+                this.setView("30/12");
+                break;
+            case "By Quarter":
+                this.setView("90/4");
+                break;
+            default:
+                this.setView("1/14"); // Default to "By Day"
+        }
+
+        console.log("View Set:", this.view); // Log the selected view
+        this.setStartDate(new Date());
+        this.handleRefresh();
     });
   }
   
@@ -130,6 +134,12 @@ export default class GanttChart extends LightningElement {
 
     let dates = {};
     let date = moment(this.startDate);
+
+    console.log("Generating Date Headers:", {
+        startDate: this.startDate,
+        slotSize: this.view.slotSize,
+        slots: this.view.slots
+    }); // Log timeline generation parameters
 
     // Loop based on the number of slots
     for (let i = 0; i < this.view.slots; i++) {
@@ -172,6 +182,13 @@ export default class GanttChart extends LightningElement {
             date.add(3, "months");
         }
 
+        console.log("Generated Day:", {
+            label: day.label,
+            start: day.start,
+            end: day.end,
+            class: day.class
+        }); // Log each day/slot details
+
         // Highlight today's column
         if (today >= day.start.getTime() && today <= day.end.getTime()) {
             day.class += " lwc-is-today";
@@ -185,6 +202,8 @@ export default class GanttChart extends LightningElement {
     // Convert dates object into an array for rendering
     this.dates = Object.values(dates);
 
+    console.log("Final Dates Array:", this.dates); // Log the final dates array
+
     // Calculate the end date for the timeline
     this.endDate = date.toDate();
     this.endDateUTC =
@@ -194,6 +213,11 @@ export default class GanttChart extends LightningElement {
         moment(this.endDate).utcOffset() * 60 * 1000 +
         "";
     this.formattedEndDate = this.endDate.toLocaleDateString();
+
+    console.log("Timeline Range:", {
+        startDate: this.startDate,
+        endDate: this.endDate
+    }); // Log the timeline range
 
     // Refresh associated resources
     Array.from(
@@ -241,10 +265,17 @@ export default class GanttChart extends LightningElement {
   }
 
   setView(value) {
+    console.log("Setting View with Value:", value); // Log the raw value
+
     let values = value.split("/");
     this.view.value = value;
-    this.view.slotSize = parseInt(value[0], 10);
+    this.view.slotSize = parseInt(values[0], 10);
     this.view.slots = parseInt(values[1], 10);
+
+    console.log("View Updated:", {
+        slotSize: this.view.slotSize,
+        slots: this.view.slots
+    }); // Log the updated view parameters
   }
 
   handleViewChange(event) {
